@@ -1,29 +1,19 @@
-# Kotla Marketplace - Backend API
+# Kotla Marketplace Platform
 
-A robust and scalable e-commerce marketplace RESTful API built with **Node.js**, **Express.js**, and **MongoDB**. It supports multi-vendor operations, product management, secure authentication, and order processing.
+A complete e-commerce marketplace platform built with React frontend and Node.js/MongoDB backend.
 
----
+## Tech Stack
 
-## 🚀 Tech Stack
+- **Frontend:** React.js, Tailwind CSS / Custom CSS
+- **Backend:** Node.js, Express.js, MongoDB, Mongoose
+- **Authentication:** JWT, Bcryptjs
 
-- **Runtime:** Node.js
-- **Framework:** Express.js
-- **Database:** MongoDB & Mongoose ODM
-- **Authentication:** JSON Web Tokens (JWT) & Bcryptjs
-- **File Uploads:** Multer & Cloudinary
-- **Email Service:** Nodemailer
+## Quick Start
 
----
-
-## ⚙️ Getting Started & Local Setup
-
-### 1. Prerequisites
-
-Make sure you have **Node.js** and **MongoDB** installed on your system.
-
-### 2. Clone the Repository & Install Dependencies
+### 1. Frontend Setup
 
 ```bash
-cd backend
+cd frontend
 npm install
+npm start
 ```
