@@ -8,10 +8,8 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 
-// .env se PORT uthayega, warna default 5000 use karega
 const PORT = process.env.PORT || 5000;
 
-// MongoDB Connection
 mongoose
   .connect(
     process.env.MONGODB_URI || "mongodb://localhost:27017/kotla-marketplace"
@@ -19,7 +17,6 @@ mongoose
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.log("❌ DB Error:", err));
 
-// Nodemailer Transporter Setup for Emails
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || "smtp.gmail.com",
   port: process.env.EMAIL_PORT || 465,
@@ -30,7 +27,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// --- SCHEMAS & MODELS ---
 const userSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
@@ -75,8 +71,6 @@ const orderSchema = new mongoose.Schema({
 });
 const Order = mongoose.model("Order", orderSchema);
 
-// --- API ROUTES ---
-
 app.get("/api/test", (req, res) => {
   res.json({ message: "✅ Backend is running!" });
 });
@@ -92,7 +86,6 @@ app.post("/api/auth/register", async (req, res) => {
   }
 });
 
-// Get all products
 app.get("/api/products", async (req, res) => {
   try {
     const products = await Product.find();
@@ -102,7 +95,6 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
-// Get products by specific seller
 app.get("/api/products/seller/:sellerId", async (req, res) => {
   try {
     const products = await Product.find({ sellerId: req.params.sellerId });
@@ -112,7 +104,6 @@ app.get("/api/products/seller/:sellerId", async (req, res) => {
   }
 });
 
-// Add product
 app.post("/api/products", async (req, res) => {
   try {
     const {
@@ -145,7 +136,6 @@ app.post("/api/products", async (req, res) => {
   }
 });
 
-// Update Product Route
 app.put("/api/products/:id", async (req, res) => {
   try {
     const { originalPrice, currentPrice } = req.body;
@@ -169,7 +159,6 @@ app.put("/api/products/:id", async (req, res) => {
   }
 });
 
-// Delete Product Route
 app.delete("/api/products/:id", async (req, res) => {
   try {
     const deletedProduct = await Product.findByIdAndDelete(req.params.id);
@@ -182,7 +171,6 @@ app.delete("/api/products/:id", async (req, res) => {
   }
 });
 
-// Order Route (Saves Order, Updates Stock & Sends Email)
 app.post("/api/orders", async (req, res) => {
   try {
     const {
@@ -207,14 +195,12 @@ app.post("/api/orders", async (req, res) => {
 
     await order.save();
 
-    // Har product ki sold count barhao aur stock kam karo
     for (const item of items) {
       await Product.findByIdAndUpdate(item.productId, {
         $inc: { sold: item.quantity, stock: -item.quantity },
       });
     }
 
-    // Buyer ko email bhejne ka code
     if (buyerEmail) {
       const mailOptions = {
         from: `"Kotla Marketplace" <${process.env.EMAIL_USER}>`,
@@ -303,7 +289,6 @@ app.get("/api/seller/stats/:sellerId", async (req, res) => {
   }
 });
 
-// Start Server
 app.listen(PORT, () => {
   console.log(`
 ╔══════════════════════════════════════╗
