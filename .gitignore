@@ -1,4 +1,3 @@
-cat > .gitignore << 'EOF'
 # Dependencies
 node_modules/
 npm-debug.log*
@@ -23,4 +22,3 @@ logs/
 # Build
 dist/
 build/
-EOF
