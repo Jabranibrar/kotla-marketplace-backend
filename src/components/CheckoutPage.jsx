@@ -9,7 +9,7 @@ export default function CheckoutPage({
   onBack,
   onShowToast,
 }) {
-  const { clearCart, setIsCartOpen } = useCart();
+  const { clearCart } = useCart();
 
   const [formData, setFormData] = useState({
     fullName: user?.name || "",
