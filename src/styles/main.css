@@ -1,0 +1,299 @@
+/* --- Global Styles --- */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+/* --- Hero & Categories --- */
+.hero-banner {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: white;
+  padding: 60px 20px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+.hero-title {
+  font-size: 36px;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+}
+.hero-subtitle {
+  font-size: 16px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.categories-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+.category-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+.category-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+}
+.category-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+.category-name {
+  font-size: 16px;
+  color: #334155;
+  margin: 0;
+  fontweight: 600;
+}
+
+/* --- Products Grid --- */
+.products-section {
+  max-width: 1200px;
+  margin: 40px auto 0 auto;
+  padding: 0 20px;
+}
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+.product-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+.product-image {
+  height: 160px;
+  background-color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  position: relative;
+  border-bottom: 1px solid #f1f5f9;
+}
+.product-discount-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #ef4444;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+.product-info {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.product-name {
+  font-size: 16px;
+  color: #1e293b;
+  margin: 0 0 10px 0;
+  font-weight: 600;
+}
+.product-price-box {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.product-original-price {
+  text-decoration: line-through;
+  color: #94a3b8;
+  font-size: 13px;
+}
+.product-current-price {
+  color: #2563eb;
+  font-weight: bold;
+  font-size: 16px;
+}
+.product-stock {
+  font-size: 12px;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+.product-stock.in-stock {
+  color: #16a34a;
+}
+.product-stock.out-stock {
+  color: #dc2626;
+}
+
+.product-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+}
+.btn-wishlist {
+  flex: 1;
+  padding: 8px;
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  color: #334155;
+}
+.btn-add-cart {
+  flex: 1;
+  padding: 8px;
+  background-color: #2563eb;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  color: white;
+}
+
+/* --- Modal Styles (Daraz Style) --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+  padding: 20px;
+}
+.modal-container {
+  background-color: white;
+  width: 100%;
+  max-width: 800px;
+  border-radius: 12px;
+  padding: 30px;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  gap: 30px;
+}
+.modal-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #64748b;
+}
+.modal-image-box {
+  flex: 1;
+  height: 300px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #e2e8f0;
+  font-size: 60px;
+}
+.modal-content-box {
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.modal-title {
+  font-size: 22px;
+  color: #1e293b;
+  margin: 0 0 10px 0;
+  font-weight: 700;
+}
+.modal-price {
+  font-size: 26px;
+  font-weight: bold;
+  color: #f97316;
+  margin-bottom: 20px;
+}
+.quantity-box {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+.qty-btn {
+  padding: 8px 16px;
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 4px;
+}
+.daraz-action-buttons {
+  display: flex;
+  gap: 12px;
+}
+.btn-daraz-cart {
+  flex: 1;
+  padding: 14px;
+  background-color: #ff9f00;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+}
+.btn-daraz-buynow {
+  flex: 1;
+  padding: 14px;
+  background-color: #fb641b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* --- Checkout Page Styles ---
+.checkout-wrapper {
+  background-color: #F1F5F9;
+  min-height: 100vh;
+  padding: 30px 20px;
+}
+.checkout-card {
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: #FFFFFF;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+*/
