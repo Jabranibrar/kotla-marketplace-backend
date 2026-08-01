@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { createOrder } from "../api";
+import "../styles/checkoutPage.css";
 
 export default function CheckoutPage({
   cartItems,
@@ -59,7 +60,7 @@ export default function CheckoutPage({
 
       if (onShowToast) {
         onShowToast(
-          "🎉 Order placed successfully! Confirmation email sent.",
+          "Order placed successfully! Confirmation email sent.",
           "success"
         );
       }
@@ -68,52 +69,15 @@ export default function CheckoutPage({
       onBack();
     } catch (err) {
       if (onShowToast) {
-        onShowToast("❌ Failed to place order. Try again.", "error");
+        onShowToast("Failed to place order. Try again.", "error");
       }
     }
   };
 
   return (
-    <div
-      style={{
-        maxWidth: "700px",
-        margin: "40px auto",
-        padding: "30px",
-        backgroundColor: "#FFFFFF",
-        borderRadius: "12px",
-        border: "1px solid #E2E8F0",
-        boxShadow: "0 4px 6px rgba(0,0,0,0.02)",
-      }}
-    >
-      {/* ✨ Clean Professional Back Button */}
-      <button
-        onClick={onBack}
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "8px",
-          background: "#FFFFFF",
-          border: "1px solid #CBD5E1",
-          color: "#334155",
-          fontWeight: "600",
-          cursor: "pointer",
-          marginBottom: "20px",
-          padding: "8px 14px",
-          borderRadius: "6px",
-          fontSize: "13px",
-          transition: "all 0.2s ease",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = "#F8FAFC";
-          e.currentTarget.style.borderColor = "#94A3B8";
-          e.currentTarget.style.color = "#0F172A";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = "#FFFFFF";
-          e.currentTarget.style.borderColor = "#CBD5E1";
-          e.currentTarget.style.color = "#334155";
-        }}
-      >
+    <div className="kotla-checkout-wrapper">
+      {/* Back Button */}
+      <button onClick={onBack} className="kotla-checkout-back-btn">
         <svg
           width="16"
           height="16"
@@ -130,91 +94,53 @@ export default function CheckoutPage({
         Back to Shopping
       </button>
 
-      <h2
-        style={{
-          fontSize: "22px",
-          fontWeight: "bold",
-          color: "#1E293B",
-          marginBottom: "8px",
-        }}
-      >
-        📦 Secure Checkout (Cash on Delivery)
-      </h2>
-      <p style={{ fontSize: "14px", color: "#64748B", marginBottom: "25px" }}>
-        Enter your shipping details to complete your order.
-      </p>
+      {/* Header */}
+      <div className="kotla-checkout-header">
+        <h2>
+          <svg
+            width="22"
+            height="22"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          Secure Checkout (Cash on Delivery)
+        </h2>
+        <p>Enter your shipping details to complete your order.</p>
+      </div>
 
       <form onSubmit={handlePlaceOrder}>
-        <div style={{ marginBottom: "15px" }}>
-          <label
-            style={{
-              display: "block",
-              fontSize: "13px",
-              fontWeight: "600",
-              color: "#475569",
-              marginBottom: "5px",
-            }}
-          >
-            Full Name
-          </label>
+        <div className="kotla-checkout-form-group">
+          <label>Full Name</label>
           <input
             type="text"
             name="fullName"
             value={formData.fullName}
             onChange={handleChange}
             required
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "6px",
-              border: "1px solid #CBD5E1",
-              fontSize: "14px",
-              boxSizing: "border-box",
-            }}
+            placeholder="Enter full name"
           />
         </div>
 
-        <div style={{ marginBottom: "15px" }}>
-          <label
-            style={{
-              display: "block",
-              fontSize: "13px",
-              fontWeight: "600",
-              color: "#475569",
-              marginBottom: "5px",
-            }}
-          >
-            Email Address (For Notification)
-          </label>
+        <div className="kotla-checkout-form-group">
+          <label>Email Address (For Notification)</label>
           <input
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
             required
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "6px",
-              border: "1px solid #CBD5E1",
-              fontSize: "14px",
-              boxSizing: "border-box",
-            }}
+            placeholder="name@example.com"
           />
         </div>
 
-        <div style={{ marginBottom: "15px" }}>
-          <label
-            style={{
-              display: "block",
-              fontSize: "13px",
-              fontWeight: "600",
-              color: "#475569",
-              marginBottom: "5px",
-            }}
-          >
-            Phone Number
-          </label>
+        <div className="kotla-checkout-form-group">
+          <label>Phone Number</label>
           <input
             type="text"
             name="phone"
@@ -222,29 +148,11 @@ export default function CheckoutPage({
             value={formData.phone}
             onChange={handleChange}
             required
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "6px",
-              border: "1px solid #CBD5E1",
-              fontSize: "14px",
-              boxSizing: "border-box",
-            }}
           />
         </div>
 
-        <div style={{ marginBottom: "15px" }}>
-          <label
-            style={{
-              display: "block",
-              fontSize: "13px",
-              fontWeight: "600",
-              color: "#475569",
-              marginBottom: "5px",
-            }}
-          >
-            Street Address
-          </label>
+        <div className="kotla-checkout-form-group">
+          <label>Street Address</label>
           <input
             type="text"
             name="address"
@@ -252,29 +160,11 @@ export default function CheckoutPage({
             value={formData.address}
             onChange={handleChange}
             required
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "6px",
-              border: "1px solid #CBD5E1",
-              fontSize: "14px",
-              boxSizing: "border-box",
-            }}
           />
         </div>
 
-        <div style={{ marginBottom: "25px" }}>
-          <label
-            style={{
-              display: "block",
-              fontSize: "13px",
-              fontWeight: "600",
-              color: "#475569",
-              marginBottom: "5px",
-            }}
-          >
-            City
-          </label>
+        <div className="kotla-checkout-form-group">
+          <label>City</label>
           <input
             type="text"
             name="city"
@@ -282,55 +172,25 @@ export default function CheckoutPage({
             value={formData.city}
             onChange={handleChange}
             required
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "6px",
-              border: "1px solid #CBD5E1",
-              fontSize: "14px",
-              boxSizing: "border-box",
-            }}
           />
         </div>
 
-        <div
-          style={{
-            backgroundColor: "#F8FAFC",
-            padding: "15px",
-            borderRadius: "8px",
-            marginBottom: "25px",
-            border: "1px solid #E2E8F0",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              fontSize: "15px",
-              fontWeight: "bold",
-              color: "#1E293B",
-            }}
-          >
-            <span>Total Payable Amount:</span>
-            <span style={{ color: "#2563EB" }}>₨ {totalPrice}</span>
-          </div>
+        <div className="kotla-checkout-summary-box">
+          <span>Total Payable Amount:</span>
+          <span>₨ {totalPrice}</span>
         </div>
 
-        <button
-          type="submit"
-          style={{
-            width: "100%",
-            padding: "14px",
-            backgroundColor: "#16A34A",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            fontSize: "16px",
-            boxShadow: "0 4px 6px rgba(22, 163, 74, 0.2)",
-          }}
-        >
+        <button type="submit" className="kotla-place-order-btn">
+          <svg
+            width="18"
+            height="18"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            viewBox="0 0 24 24"
+          >
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
           Confirm & Place Order (COD)
         </button>
       </form>

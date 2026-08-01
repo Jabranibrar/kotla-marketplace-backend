@@ -1,0 +1,327 @@
+/* --- Professional Responsive Header Styles --- */
+.kotla-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+.kotla-header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 15px;
+}
+
+.kotla-logo {
+  font-size: 22px;
+  font-weight: bold;
+  color: #1e293b;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.kotla-logo span {
+  color: #2563eb;
+}
+
+/* Search Bar */
+.kotla-search-box {
+  flex: 1;
+  max-width: 500px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.kotla-search-icon {
+  position: absolute;
+  left: 12px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.kotla-search-box input {
+  width: 100%;
+  padding: 10px 36px 10px 38px;
+  background-color: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.kotla-search-box input:focus {
+  border-color: #2563eb;
+  background-color: #ffffff;
+}
+
+.kotla-clear-search {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #64748b;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 0;
+}
+
+/* Header Actions */
+.kotla-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.kotla-sell-btn {
+  padding: 8px 14px;
+  background-color: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+.kotla-sell-btn:hover {
+  background-color: #dbeafe;
+}
+
+.kotla-cart-btn {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: #334155;
+  padding: 8px;
+}
+
+.kotla-cart-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #dc2626;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 1px 5px;
+  border-radius: 10px;
+}
+
+.kotla-signin-btn {
+  padding: 8px 16px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.kotla-signin-btn:hover {
+  background-color: #1d4ed8;
+}
+
+/* Profile Dropdown */
+.kotla-profile-container {
+  position: relative;
+}
+
+.kotla-profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1e293b;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  transition: background-color 0.2s;
+}
+
+.kotla-profile-trigger.active {
+  background-color: #f1f5f9;
+}
+
+.kotla-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #2563eb;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.kotla-user-name {
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kotla-dropdown-arrow {
+  font-size: 10px;
+  color: #64748b;
+  transition: transform 0.2s;
+}
+
+.kotla-dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.kotla-dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 50px;
+  width: 240px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  z-index: 1100;
+}
+
+.kotla-dropdown-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  background-color: #f8fafc;
+}
+
+.kotla-signed-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748b;
+  margin: 0;
+  font-weight: 600;
+}
+
+.kotla-signed-name {
+  font-size: 14px;
+  font-weight: bold;
+  color: #1e293b;
+  margin: 3px 0 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kotla-user-type-badge {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.kotla-user-type-badge.seller {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+.kotla-user-type-badge.buyer {
+  background-color: #f0fdf4;
+  color: #166534;
+}
+
+.kotla-dropdown-links {
+  padding: 6px 0;
+}
+
+.kotla-dropdown-links button,
+.kotla-dropdown-footer button {
+  width: 100%;
+  padding: 10px 16px;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #334155;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background-color 0.15s;
+}
+
+.kotla-dropdown-links button:hover,
+.kotla-dropdown-footer button:hover {
+  background-color: #f8fafc;
+}
+
+.kotla-dropdown-links button.seller-dashboard-link {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.kotla-dropdown-footer {
+  border-top: 1px solid #f1f5f9;
+  padding: 6px 0;
+}
+
+.kotla-dropdown-footer button {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+  .kotla-header-container {
+    padding: 10px 12px;
+    flex-wrap: wrap;
+  }
+
+  .kotla-logo {
+    font-size: 18px;
+  }
+
+  .kotla-search-box {
+    order: 3;
+    flex: 0 0 100%;
+    max-width: 100%;
+    margin-top: 10px;
+  }
+
+  .kotla-header-actions {
+    gap: 10px;
+  }
+
+  .kotla-sell-btn {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+
+  .kotla-user-name {
+    display: none;
+  }
+}

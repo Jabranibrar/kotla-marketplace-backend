@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="100%" stop-color="#9333EA" />
+    </linearGradient>
+  </defs>
+  <!-- Background Rounded Box -->
+  <rect width="512" height="512" rx="112" fill="url(#grad)" />
+  
+  <!-- Modern 'K' Symbol resembling a storefront / bag -->
+  <path d="M140 120h48v120l104-120h64L252 256l112 136h-64L188 280v112h-48V120z" fill="#FFFFFF" />
+  
+  <!-- Accent Shopping Bag Handle / Dot -->
+  <circle cx="360" cy="140" r="24" fill="#38BDF8" />
+</svg>

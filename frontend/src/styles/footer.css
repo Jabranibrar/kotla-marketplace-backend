@@ -1,0 +1,158 @@
+/* --- Professional Corporate Footer Styles --- */
+.kotla-footer {
+  background-color: #0f172a;
+  color: #f8fafc;
+  padding: 60px 0 24px 0;
+  margin-top: auto;
+  border-top: 1px solid #1e293b;
+  font-family: inherit;
+}
+
+.kotla-footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.kotla-footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.kotla-footer-column h3 {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 18px;
+  letter-spacing: 0.3px;
+}
+
+.kotla-footer-logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.kotla-footer-logo span {
+  color: #38bdf8;
+}
+
+.kotla-footer-desc {
+  color: #94a3b8;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.kotla-footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.kotla-footer-links a {
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.kotla-footer-links a svg {
+  color: #64748b;
+  transition: color 0.2s ease;
+}
+
+.kotla-footer-links a:hover {
+  color: #38bdf8;
+  transform: translateX(3px);
+}
+
+.kotla-footer-links a:hover svg {
+  color: #38bdf8;
+}
+
+.kotla-footer-contact {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.kotla-footer-contact li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: #94a3b8;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.kotla-footer-contact svg {
+  color: #38bdf8;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.kotla-footer-bottom {
+  border-top: 1px solid #1e293b;
+  padding-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.kotla-footer-copy {
+  color: #64748b;
+  font-size: 13px;
+  margin: 0;
+}
+
+.kotla-footer-security {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 12px;
+  background-color: #1e293b;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #334155;
+}
+
+.kotla-footer-security svg {
+  color: #10b981;
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+  .kotla-footer {
+    padding: 40px 0 20px 0;
+  }
+
+  .kotla-footer-grid {
+    gap: 25px;
+    margin-bottom: 30px;
+  }
+
+  .kotla-footer-bottom {
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+  }
+}

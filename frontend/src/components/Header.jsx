@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "../styles/main.css";
+import "../styles/header.css";
 
 export default function Header({
   onCartClick,
@@ -46,61 +46,16 @@ export default function Header({
   };
 
   return (
-    <header
-      className="header"
-      style={{
-        backgroundColor: "#FFFFFF",
-        borderBottom: "1px solid #E2E8F0",
-        position: "sticky",
-        top: 0,
-        zIndex: 1000,
-        boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-      }}
-    >
-      <div
-        className="header-container"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "12px 24px",
-          maxWidth: "1200px",
-          margin: "0 auto",
-        }}
-      >
-        <div
-          onClick={() => handleMenuClick("home")}
-          style={{
-            fontSize: "22px",
-            fontWeight: "bold",
-            color: "#1E293B",
-            cursor: "pointer",
-          }}
-        >
-          Kotla<span style={{ color: "#2563EB" }}>Market</span>
+    <header className="kotla-header">
+      <div className="kotla-header-container">
+        {/* Logo */}
+        <div className="kotla-logo" onClick={() => handleMenuClick("home")}>
+          Kotla<span>Market</span>
         </div>
 
-        <div
-          className="header-search"
-          style={{
-            flex: 1,
-            maxWidth: "500px",
-            margin: "0 25px",
-            position: "relative",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <span
-            style={{
-              position: "absolute",
-              left: "12px",
-              color: "#94A3B8",
-              display: "flex",
-              alignItems: "center",
-              pointerEvents: "none",
-            }}
-          >
+        {/* Search Bar */}
+        <div className="kotla-search-box">
+          <span className="kotla-search-icon">
             <svg
               width="18"
               height="18"
@@ -118,70 +73,24 @@ export default function Header({
             placeholder="Search for products, brands and more..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "10px 36px 10px 38px",
-              backgroundColor: "#F8FAFC",
-              border: "1px solid #CBD5E1",
-              borderRadius: "8px",
-              fontSize: "14px",
-              outline: "none",
-              boxSizing: "border-box",
-            }}
           />
           {searchQuery && (
             <button
+              className="kotla-clear-search"
               onClick={() => onSearchChange("")}
-              style={{
-                position: "absolute",
-                right: "12px",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: "#64748B",
-                fontSize: "16px",
-                fontWeight: "bold",
-                padding: 0,
-              }}
             >
               ✕
             </button>
           )}
         </div>
 
-        <div
-          className="header-actions"
-          style={{ display: "flex", alignItems: "center", gap: "20px" }}
-        >
-          <button
-            onClick={onSellClick}
-            style={{
-              padding: "8px 14px",
-              backgroundColor: "#EFF6FF",
-              color: "#2563EB",
-              border: "1px solid #BFDBFE",
-              borderRadius: "6px",
-              fontWeight: "600",
-              fontSize: "13px",
-              cursor: "pointer",
-            }}
-          >
+        {/* Actions (Sell, Cart, Profile/Sign In) */}
+        <div className="kotla-header-actions">
+          <button className="kotla-sell-btn" onClick={onSellClick}>
             {userType === "seller" ? "Seller Dashboard" : "Become a Seller"}
           </button>
 
-          <button
-            onClick={onCartClick}
-            style={{
-              position: "relative",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              color: "#334155",
-              padding: "8px",
-            }}
-          >
+          <button className="kotla-cart-btn" onClick={onCartClick}>
             <svg
               width="22"
               height="22"
@@ -195,141 +104,44 @@ export default function Header({
               <path d="M16 10a4 4 0 0 1-8 0"></path>
             </svg>
             {totalItems > 0 && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "0",
-                  right: "0",
-                  backgroundColor: "#DC2626",
-                  color: "white",
-                  fontSize: "11px",
-                  fontWeight: "bold",
-                  padding: "1px 5px",
-                  borderRadius: "10px",
-                }}
-              >
-                {totalItems}
-              </span>
+              <span className="kotla-cart-badge">{totalItems}</span>
             )}
           </button>
 
           {isLoggedIn ? (
-            <div style={{ position: "relative" }} ref={dropdownRef}>
+            <div className="kotla-profile-container" ref={dropdownRef}>
               <div
+                className={`kotla-profile-trigger ${
+                  dropdownOpen ? "active" : ""
+                }`}
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  fontWeight: "600",
-                  fontSize: "14px",
-                  color: "#1E293B",
-                  cursor: "pointer",
-                  padding: "6px 12px",
-                  borderRadius: "8px",
-                  backgroundColor: dropdownOpen ? "#F1F5F9" : "#F8FAFC",
-                  border: "1px solid #E2E8F0",
-                }}
               >
-                <div
-                  style={{
-                    width: "28px",
-                    height: "28px",
-                    borderRadius: "50%",
-                    backgroundColor: "#2563EB",
-                    color: "white",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                  }}
-                >
+                <div className="kotla-user-avatar">
                   {getUserInitials(user?.name)}
                 </div>
-                <span
-                  style={{
-                    maxWidth: "110px",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
+                <span className="kotla-user-name">
                   {user?.name?.split(" ")[0] || "Account"}
                 </span>
                 <span
-                  style={{
-                    fontSize: "10px",
-                    color: "#64748B",
-                    transform: dropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
-                    transition: "transform 0.2s",
-                  }}
+                  className={`kotla-dropdown-arrow ${
+                    dropdownOpen ? "open" : ""
+                  }`}
                 >
                   ▼
                 </span>
               </div>
 
               {dropdownOpen && (
-                <div
-                  style={{
-                    position: "absolute",
-                    right: 0,
-                    top: "50px",
-                    width: "240px",
-                    backgroundColor: "#FFFFFF",
-                    border: "1px solid #E2E8F0",
-                    borderRadius: "10px",
-                    boxShadow: "0 10px 30px -5px rgba(0,0,0,0.12)",
-                    overflow: "hidden",
-                    zIndex: 1100,
-                  }}
-                >
-                  <div
-                    style={{
-                      padding: "14px 16px",
-                      borderBottom: "1px solid #F1F5F9",
-                      backgroundColor: "#F8FAFC",
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontSize: "11px",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.5px",
-                        color: "#64748B",
-                        margin: 0,
-                        fontWeight: "600",
-                      }}
-                    >
-                      Signed in as
-                    </p>
-                    <p
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: "bold",
-                        color: "#1E293B",
-                        margin: "3px 0 0 0",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
+                <div className="kotla-dropdown-menu">
+                  <div className="kotla-dropdown-header">
+                    <p className="kotla-signed-label">Signed in as</p>
+                    <p className="kotla-signed-name">
                       {user?.name || "Kotla User"}
                     </p>
-                    {/* DYNAMIC USER TYPE BADGE FIX */}
                     <span
-                      style={{
-                        display: "inline-block",
-                        marginTop: "6px",
-                        fontSize: "10px",
-                        backgroundColor:
-                          userType === "seller" ? "#EFF6FF" : "#F0FDF4",
-                        color: userType === "seller" ? "#2563EB" : "#166534",
-                        padding: "2px 8px",
-                        borderRadius: "4px",
-                        fontWeight: "bold",
-                        textTransform: "uppercase",
-                      }}
+                      className={`kotla-user-type-badge ${
+                        userType === "seller" ? "seller" : "buyer"
+                      }`}
                     >
                       {userType === "seller"
                         ? "Seller Profile"
@@ -337,108 +149,29 @@ export default function Header({
                     </span>
                   </div>
 
-                  <div style={{ padding: "6px 0" }}>
-                    <button
-                      onClick={() => handleMenuClick("home")}
-                      style={{
-                        width: "100%",
-                        padding: "10px 16px",
-                        textAlign: "left",
-                        background: "none",
-                        border: "none",
-                        fontSize: "13px",
-                        color: "#334155",
-                        cursor: "pointer",
-                        fontWeight: "500",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}
-                    >
+                  <div className="kotla-dropdown-links">
+                    <button onClick={() => handleMenuClick("home")}>
                       <span>👤</span> My Profile
                     </button>
-                    <button
-                      onClick={() => handleMenuClick("orders")}
-                      style={{
-                        width: "100%",
-                        padding: "10px 16px",
-                        textAlign: "left",
-                        background: "none",
-                        border: "none",
-                        fontSize: "13px",
-                        color: "#334155",
-                        cursor: "pointer",
-                        fontWeight: "500",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}
-                    >
+                    <button onClick={() => handleMenuClick("orders")}>
                       <span>📦</span> My Orders
                     </button>
-                    <button
-                      onClick={() => handleMenuClick("addresses")}
-                      style={{
-                        width: "100%",
-                        padding: "10px 16px",
-                        textAlign: "left",
-                        background: "none",
-                        border: "none",
-                        fontSize: "13px",
-                        color: "#334155",
-                        cursor: "pointer",
-                        fontWeight: "500",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}
-                    >
+                    <button onClick={() => handleMenuClick("addresses")}>
                       <span>📍</span> Saved Addresses
                     </button>
 
                     {userType === "seller" && (
                       <button
+                        className="seller-dashboard-link"
                         onClick={() => handleMenuClick("seller-dashboard")}
-                        style={{
-                          width: "100%",
-                          padding: "10px 16px",
-                          textAlign: "left",
-                          background: "none",
-                          border: "none",
-                          fontSize: "13px",
-                          color: "#2563EB",
-                          cursor: "pointer",
-                          fontWeight: "600",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "10px",
-                        }}
                       >
                         <span>📊</span> Seller Dashboard
                       </button>
                     )}
                   </div>
 
-                  <div
-                    style={{ borderTop: "1px solid #F1F5F9", padding: "6px 0" }}
-                  >
-                    <button
-                      onClick={() => handleMenuClick("logout")}
-                      style={{
-                        width: "100%",
-                        padding: "10px 16px",
-                        textAlign: "left",
-                        background: "none",
-                        border: "none",
-                        fontSize: "13px",
-                        color: "#DC2626",
-                        cursor: "pointer",
-                        fontWeight: "600",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}
-                    >
+                  <div className="kotla-dropdown-footer">
+                    <button onClick={() => handleMenuClick("logout")}>
                       <span>🚪</span> Sign Out
                     </button>
                   </div>
@@ -446,19 +179,7 @@ export default function Header({
               )}
             </div>
           ) : (
-            <button
-              onClick={onLoginClick}
-              style={{
-                padding: "8px 16px",
-                backgroundColor: "#2563EB",
-                color: "white",
-                border: "none",
-                borderRadius: "6px",
-                fontWeight: "600",
-                fontSize: "14px",
-                cursor: "pointer",
-              }}
-            >
+            <button className="kotla-signin-btn" onClick={onLoginClick}>
               Sign In
             </button>
           )}
