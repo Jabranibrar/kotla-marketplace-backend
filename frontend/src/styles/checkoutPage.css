@@ -1,0 +1,147 @@
+/* --- Professional Checkout Page Styles --- */
+.kotla-checkout-wrapper {
+  max-width: 720px;
+  margin: 40px auto;
+  padding: 36px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+}
+
+.kotla-checkout-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 24px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.kotla-checkout-back-btn:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.kotla-checkout-header {
+  margin-bottom: 24px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 16px;
+}
+
+.kotla-checkout-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.kotla-checkout-header h2 svg {
+  color: #2563eb;
+}
+
+.kotla-checkout-header p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+.kotla-checkout-form-group {
+  margin-bottom: 18px;
+}
+
+.kotla-checkout-form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 6px;
+  letter-spacing: 0.2px;
+}
+
+.kotla-checkout-form-group input {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  color: #1e293b;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kotla-checkout-form-group input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.kotla-checkout-summary-box {
+  background-color: #f8fafc;
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin: 24px 0;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.kotla-checkout-summary-box span {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.kotla-checkout-summary-box span:last-child {
+  color: #2563eb;
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.kotla-place-order-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.kotla-place-order-btn:hover {
+  background-color: #15803d;
+}
+
+.kotla-place-order-btn:active {
+  transform: scale(0.99);
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+  .kotla-checkout-wrapper {
+    margin: 20px 16px;
+    padding: 20px;
+  }
+}

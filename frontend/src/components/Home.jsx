@@ -15,18 +15,22 @@ export default function Home({
   onDirectCheckout,
 }) {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true); // <-- Loading state added
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        setLoading(true); // Fetching shuru hone par loading true
         const response = await getProducts();
         setProducts(response.data);
       } catch (error) {
         if (typeof onShowToast === "function") {
           onShowToast("Error loading products", "error");
         }
+      } finally {
+        setLoading(false); // Data fetch hone ke baad loading false
       }
     };
     fetchProducts();
@@ -67,7 +71,7 @@ export default function Home({
     <div style={{ paddingBottom: "50px" }}>
       {/* Hero Banner */}
       <div className="hero-banner">
-        <h1 className="hero-title">🛍️ Welcome to Kotla Marketplace</h1>
+        <h1 className="hero-title">🛍️ Welcome to Kotla Store</h1>
         <p className="hero-subtitle">
           Best prices on local products | Fast delivery | Secure Cash on
           Delivery
@@ -181,10 +185,51 @@ export default function Home({
             : selectedCategory !== "All"
             ? `${selectedCategory.toUpperCase()} Products`
             : "Featured Products"}{" "}
-          ({filteredProducts.length})
+          {!loading && `(${filteredProducts.length})`}
         </h2>
 
-        {filteredProducts.length === 0 ? (
+        {/* 1. Agar data load ho raha hai -> Skeleton Loaders dikhayein */}
+        {loading ? (
+          <div className="products-grid">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <div
+                key={n}
+                className="product-card"
+                style={{ pointerEvents: "none" }}
+              >
+                <div
+                  style={{
+                    height: "180px",
+                    backgroundColor: "#E2E8F0",
+                    animation: "pulse 1.5s infinite",
+                  }}
+                />
+                <div style={{ padding: "15px" }}>
+                  <div
+                    style={{
+                      height: "16px",
+                      backgroundColor: "#E2E8F0",
+                      borderRadius: "4px",
+                      marginBottom: "10px",
+                      width: "80%",
+                      animation: "pulse 1.5s infinite",
+                    }}
+                  />
+                  <div
+                    style={{
+                      height: "14px",
+                      backgroundColor: "#E2E8F0",
+                      borderRadius: "4px",
+                      width: "40%",
+                      animation: "pulse 1.5s infinite",
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          /* 2. Agar loading khatam ho chuki aur sach mein koi product na mile */
           <div
             className="empty-state"
             style={{
@@ -201,6 +246,7 @@ export default function Home({
             </p>
           </div>
         ) : (
+          /* 3. Asli Products grid */
           <div className="products-grid">
             {filteredProducts.map((product) => (
               <div

@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { addProduct, updateProduct } from "../api";
+import "../styles/addProduct.css";
 
-// ✨ Professional Clothing & Marketplace Default Image
 const DEFAULT_PRODUCT_IMAGE =
   "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
 
-// ✨ Category-wise default professional descriptions
 const CATEGORY_DESCRIPTIONS = {
   cloths:
     "Premium quality clothing crafted with comfortable fabric, modern style, and perfect fit for everyday elegance.",
@@ -32,7 +31,7 @@ export default function AddProduct({
     stock: "",
     category: "cloths",
     image: "",
-    description: "", // ✨ Added back description to state
+    description: "",
   });
   const [loading, setLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -87,7 +86,6 @@ export default function AddProduct({
           ? form.image
           : DEFAULT_PRODUCT_IMAGE;
 
-      // ✨ Agar user ne custom description di hai toh wo jayegi, warna category ki default
       const finalDescription =
         form.description && form.description.trim() !== ""
           ? form.description
@@ -108,11 +106,11 @@ export default function AddProduct({
         const productId = editProductData._id || editProductData.id;
         await updateProduct(productId, payload);
         if (onShowToast)
-          onShowToast("✅ Product updated successfully!", "success");
+          onShowToast("Product updated successfully!", "success");
       } else {
         await addProduct(payload);
         if (onShowToast)
-          onShowToast("✅ Product published successfully!", "success");
+          onShowToast("Product published successfully!", "success");
       }
 
       setForm({
@@ -129,47 +127,46 @@ export default function AddProduct({
     } catch (error) {
       const errorMsg =
         error.response?.data?.error || error.message || "Something went wrong";
-      if (onShowToast) onShowToast(`❌ Error: ${errorMsg}`, "error");
+      if (onShowToast) onShowToast(`Error: ${errorMsg}`, "error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div
-      style={{
-        padding: "30px",
-        maxWidth: "550px",
-        margin: "0 auto",
-        backgroundColor: "#FFFFFF",
-        borderRadius: "12px",
-        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-        border: "1px solid #E2E8F0",
-      }}
-    >
-      <h2
-        style={{
-          color: "#1E293B",
-          marginBottom: "20px",
-          fontSize: "22px",
-          fontWeight: "bold",
-        }}
-      >
-        {editProductData ? "✏️ Edit Product Details" : "➕ Add New Product"}
-      </h2>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "15px" }}>
-          <label
-            style={{
-              display: "block",
-              fontSize: "13px",
-              fontWeight: "600",
-              color: "#475569",
-              marginBottom: "5px",
-            }}
+    <div className="kotla-product-modal">
+      <h2 className="kotla-modal-header">
+        {editProductData ? (
+          <svg
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
           >
-            Product Name *
-          </label>
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+        ) : (
+          <svg
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        )}
+        {editProductData ? "Edit Product Details" : "Publish New Product"}
+      </h2>
+
+      <form onSubmit={handleSubmit}>
+        <div className="kotla-form-group">
+          <label>Product Name *</label>
           <input
             type="text"
             name="name"
@@ -177,135 +174,55 @@ export default function AddProduct({
             value={form.name}
             onChange={handleChange}
             required
-            style={{
-              width: "100%",
-              padding: "10px 12px",
-              borderRadius: "6px",
-              border: "1px solid #CBD5E1",
-              fontSize: "14px",
-              outline: "none",
-              boxSizing: "border-box",
-            }}
           />
         </div>
 
         {/* Image Section */}
-        <div style={{ marginBottom: "15px" }}>
-          <label
-            style={{
-              display: "block",
-              fontSize: "13px",
-              fontWeight: "600",
-              color: "#475569",
-              marginBottom: "5px",
-            }}
-          >
-            Product Image *
-          </label>
-
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "18px",
-              padding: "15px",
-              backgroundColor: "#F8FAFC",
-              border: "1px solid #CBD5E1",
-              borderRadius: "10px",
-            }}
-          >
+        <div className="kotla-form-group">
+          <label>Product Image *</label>
+          <div className="kotla-image-upload-wrapper">
             <div
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
-              style={{
-                position: "relative",
-                width: "80px",
-                height: "80px",
-                borderRadius: "8px",
-                overflow: "hidden",
-                border: "2px solid #E2E8F0",
-                backgroundColor: "#FFF",
-                flexShrink: 0,
-                cursor: form.image ? "pointer" : "default",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.04)",
-              }}
+              className={`kotla-preview-container ${
+                form.image ? "has-image" : ""
+              }`}
             >
               <img
                 src={form.image || DEFAULT_PRODUCT_IMAGE}
                 alt="Product Preview"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  transition: "transform 0.2s ease",
-                  transform:
-                    isHovered && form.image ? "scale(1.05)" : "scale(1)",
-                }}
               />
 
               {form.image && isHovered && (
                 <div
+                  className="kotla-remove-overlay"
                   onClick={handleRemoveImage}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    backgroundColor: "rgba(15, 23, 42, 0.75)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    transition: "all 0.2s ease",
-                  }}
                 >
-                  <span
-                    style={{
-                      color: "#FFFFFF",
-                      fontSize: "11px",
-                      fontWeight: "700",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.5px",
-                      backgroundColor: "#DC2626",
-                      padding: "4px 8px",
-                      borderRadius: "4px",
-                      boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-                    }}
-                  >
-                    Remove
-                  </span>
+                  <span className="kotla-remove-btn-tag">Remove</span>
                 </div>
               )}
             </div>
 
-            <div style={{ flex: 1 }}>
-              <p
-                style={{
-                  fontSize: "13px",
-                  color: "#334155",
-                  margin: "0 0 6px 0",
-                  fontWeight: "600",
-                }}
-              >
+            <div className="kotla-image-info">
+              <p className="kotla-image-status-text">
                 {form.image
                   ? "Custom image uploaded (Hover to remove)"
                   : "Default professional boutique image applied:"}
               </p>
-              <label
-                style={{
-                  display: "inline-block",
-                  padding: "6px 12px",
-                  backgroundColor: "#FFFFFF",
-                  color: "#2563EB",
-                  border: "1px solid #BFDBFE",
-                  borderRadius: "6px",
-                  fontSize: "12px",
-                  fontWeight: "600",
-                  cursor: "pointer",
-                  boxShadow: "0 1px 2px rgba(0,0,0,0.02)",
-                }}
-              >
-                📁 Choose File
+              <label className="kotla-file-upload-label">
+                <svg
+                  width="14"
+                  height="14"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                Choose File
                 <input
                   type="file"
                   accept="image/*"
@@ -313,39 +230,14 @@ export default function AddProduct({
                   style={{ display: "none" }}
                 />
               </label>
-              <span
-                style={{
-                  fontSize: "11px",
-                  color: "#64748B",
-                  marginLeft: "8px",
-                }}
-              >
-                PNG, JPG or WEBP
-              </span>
+              <span className="kotla-file-hint">PNG, JPG or WEBP</span>
             </div>
           </div>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "12px",
-            marginBottom: "15px",
-          }}
-        >
-          <div>
-            <label
-              style={{
-                display: "block",
-                fontSize: "13px",
-                fontWeight: "600",
-                color: "#475569",
-                marginBottom: "5px",
-              }}
-            >
-              Original Price (₨) *
-            </label>
+        <div className="kotla-form-row">
+          <div className="kotla-form-group" style={{ marginBottom: 0 }}>
+            <label>Original Price (₨) *</label>
             <input
               type="number"
               name="originalPrice"
@@ -353,30 +245,11 @@ export default function AddProduct({
               value={form.originalPrice}
               onChange={handleChange}
               required
-              style={{
-                width: "100%",
-                padding: "10px 12px",
-                borderRadius: "6px",
-                border: "1px solid #CBD5E1",
-                fontSize: "14px",
-                outline: "none",
-                boxSizing: "border-box",
-              }}
             />
           </div>
 
-          <div>
-            <label
-              style={{
-                display: "block",
-                fontSize: "13px",
-                fontWeight: "600",
-                color: "#475569",
-                marginBottom: "5px",
-              }}
-            >
-              Sale Price (₨) *
-            </label>
+          <div className="kotla-form-group" style={{ marginBottom: 0 }}>
+            <label>Sale Price (₨) *</label>
             <input
               type="number"
               name="currentPrice"
@@ -384,31 +257,12 @@ export default function AddProduct({
               value={form.currentPrice}
               onChange={handleChange}
               required
-              style={{
-                width: "100%",
-                padding: "10px 12px",
-                borderRadius: "6px",
-                border: "1px solid #CBD5E1",
-                fontSize: "14px",
-                outline: "none",
-                boxSizing: "border-box",
-              }}
             />
           </div>
         </div>
 
-        <div style={{ marginBottom: "15px" }}>
-          <label
-            style={{
-              display: "block",
-              fontSize: "13px",
-              fontWeight: "600",
-              color: "#475569",
-              marginBottom: "5px",
-            }}
-          >
-            Stock Quantity *
-          </label>
+        <div className="kotla-form-group">
+          <label>Stock Quantity *</label>
           <input
             type="number"
             name="stock"
@@ -416,107 +270,35 @@ export default function AddProduct({
             value={form.stock}
             onChange={handleChange}
             required
-            style={{
-              width: "100%",
-              padding: "10px 12px",
-              borderRadius: "6px",
-              border: "1px solid #CBD5E1",
-              fontSize: "14px",
-              outline: "none",
-              boxSizing: "border-box",
-            }}
           />
         </div>
 
         {/* Category Dropdown */}
-        <div style={{ marginBottom: "15px" }}>
-          <label
-            style={{
-              display: "block",
-              fontSize: "13px",
-              fontWeight: "600",
-              color: "#475569",
-              marginBottom: "5px",
-            }}
-          >
-            Category *
-          </label>
-          <select
-            name="category"
-            value={form.category}
-            onChange={handleChange}
-            style={{
-              width: "100%",
-              padding: "11px 14px",
-              borderRadius: "6px",
-              border: "1px solid #CBD5E1",
-              fontSize: "14px",
-              fontWeight: "500",
-              color: "#1E293B",
-              backgroundColor: "#FFFFFF",
-              outline: "none",
-              cursor: "pointer",
-              boxSizing: "border-box",
-              boxShadow: "0 1px 2px rgba(0,0,0,0.02)",
-            }}
-          >
-            <option value="cloths">👕 Cloths & Fabrics (Shops)</option>
-            <option value="fashion">👗 Fashion & Apparel</option>
-            <option value="electronics">📱 Electronics & Gadgets</option>
-            <option value="tools">🔧 Hardware & Tools</option>
-            <option value="beauty">💄 Beauty & Personal Care</option>
+        <div className="kotla-form-group">
+          <label>Category *</label>
+          <select name="category" value={form.category} onChange={handleChange}>
+            <option value="cloths">Cloths & Fabrics (Shops)</option>
+            <option value="fashion">Fashion & Apparel</option>
+            <option value="electronics">Electronics & Gadgets</option>
+            <option value="tools">Hardware & Tools</option>
+            <option value="beauty">Beauty & Personal Care</option>
           </select>
         </div>
 
-        {/* ✨ Custom Description Input Field Restored Here */}
-        <div style={{ marginBottom: "20px" }}>
-          <label
-            style={{
-              display: "block",
-              fontSize: "13px",
-              fontWeight: "600",
-              color: "#475569",
-              marginBottom: "5px",
-            }}
-          >
-            Custom Description (Optional)
-          </label>
+        {/* Custom Description Input Field */}
+        <div className="kotla-form-group">
+          <label>Custom Description (Optional)</label>
           <textarea
             name="description"
             placeholder="Leave blank to use smart category default description..."
             value={form.description}
             onChange={handleChange}
             rows="3"
-            style={{
-              width: "100%",
-              padding: "10px 12px",
-              borderRadius: "6px",
-              border: "1px solid #CBD5E1",
-              fontSize: "14px",
-              outline: "none",
-              boxSizing: "border-box",
-              resize: "vertical",
-            }}
           />
         </div>
 
-        <div style={{ display: "flex", gap: "10px" }}>
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              flex: 1,
-              padding: "12px",
-              backgroundColor: "#2563EB",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
-              cursor: loading ? "not-allowed" : "pointer",
-              fontWeight: "600",
-              fontSize: "15px",
-              opacity: loading ? 0.7 : 1,
-            }}
-          >
+        <div className="kotla-modal-actions">
+          <button type="submit" disabled={loading} className="kotla-submit-btn">
             {loading
               ? "Processing..."
               : editProductData
@@ -526,16 +308,7 @@ export default function AddProduct({
           <button
             type="button"
             onClick={onSuccess}
-            style={{
-              padding: "12px 20px",
-              backgroundColor: "#E2E8F0",
-              color: "#334155",
-              border: "none",
-              borderRadius: "6px",
-              cursor: "pointer",
-              fontWeight: "600",
-              fontSize: "15px",
-            }}
+            className="kotla-cancel-btn"
           >
             Cancel
           </button>
