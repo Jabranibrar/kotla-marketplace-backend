@@ -65,7 +65,6 @@ const orderSchema = new mongoose.Schema({
 });
 const Order = mongoose.model("Order", orderSchema);
 
-// --- Address Schema ---
 const addressSchema = new mongoose.Schema(
   {
     userId: { type: String, required: true },
@@ -179,7 +178,6 @@ app.delete("/api/products/:id", async (req, res) => {
   }
 });
 
-// --- Address API Endpoints ---
 app.get("/api/addresses/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
@@ -253,7 +251,14 @@ app.post("/api/orders", async (req, res) => {
       ...new Set(items.map((i) => i.sellerId).filter(Boolean)),
     ];
 
-    const sellers = await User.find({ _id: { $in: sellerIds } });
+    const validSellerIds = sellerIds.filter((id) =>
+      mongoose.Types.ObjectId.isValid(id)
+    );
+    const sellers =
+      validSellerIds.length > 0
+        ? await User.find({ _id: { $in: validSellerIds } })
+        : [];
+
     const sellerEmailMap = {};
     sellers.forEach((s) => {
       sellerEmailMap[s._id.toString()] = s.email;
