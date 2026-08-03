@@ -6,7 +6,6 @@ export default function Footer() {
     <footer className="kotla-footer">
       <div className="kotla-footer-content">
         <div className="kotla-footer-grid">
-          {/* Column 1: Brand Info */}
           <div className="kotla-footer-column">
             <div className="kotla-footer-logo">
               Kotla<span>Store</span>
@@ -17,7 +16,6 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Column 2: Categories */}
           <div className="kotla-footer-column">
             <h3>Explore Categories</h3>
             <ul className="kotla-footer-links">
