@@ -30,4 +30,24 @@ export const registerSeller = (data) => API.post("/api/auth/register", data);
 
 export const createOrder = (data) => API.post("/api/orders", data);
 
+export const getAddresses = async (userId) => {
+  try {
+    const response = await API.get(`/api/addresses/${userId}`);
+    return response.data;
+  } catch (err) {
+    console.error("Error fetching addresses:", err);
+    return [];
+  }
+};
+
+export const addAddress = async (data) => {
+  try {
+    const response = await API.post("/api/addresses", data);
+    return response.data;
+  } catch (err) {
+    console.error("Error saving address:", err);
+    throw err;
+  }
+};
+
 export default API;

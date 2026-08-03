@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
+import "../styles/productDetailModal.css";
 
-// ✨ Professional Category-wise Fallback Images & Descriptions
 const CATEGORY_DEFAULTS = {
   electronics: {
     image:
@@ -31,17 +31,16 @@ export default function ProductDetailModal({
   onClose,
   onShowToast,
   onDirectCheckout,
+  user,
+  onOpenLoginModal,
 }) {
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
 
-  // Get available stock (default to 10 if stock property is missing, or use product.stock)
   const availableStock =
     product?.stock !== undefined ? Number(product.stock) : 10;
 
-  // Reset quantity when modal opens for a new product
   useEffect(() => {
-    // Agar stock 0 ya us se kam hai toh quantity 0 rakho, warna 1
     setQuantity(availableStock > 0 ? 1 : 0);
   }, [product, availableStock]);
 
@@ -63,34 +62,56 @@ export default function ProductDetailModal({
       ? product.description
       : defaultFallback.desc;
 
-  const handleAddToCart = () => {
-    if (availableStock <= 0) {
-      if (typeof onShowToast === "function")
-        onShowToast("Product is out of stock!", "error");
+  // ✨ Robust Authentication & Login Modal Trigger
+  const checkAuthAndProceed = (actionCallback) => {
+    const isUserLoggedIn = user && (user._id || user.id || user.email);
+
+    if (!isUserLoggedIn) {
+      onClose(); // Product modal band karo
+
+      if (typeof onOpenLoginModal === "function") {
+        onOpenLoginModal(); // Pass kiya hua login modal function chalao
+      } else {
+        // Fallback agar prop na mile toh custom event dispatch karo taake app ka main navbar/layout login modal khol de
+        window.dispatchEvent(new CustomEvent("open-login-modal"));
+      }
       return;
     }
-    for (let i = 0; i < quantity; i++) {
-      addToCart(product);
-    }
-    if (typeof onShowToast === "function") {
-      onShowToast(`Added ${quantity} item(s) to cart!`, "success");
-    }
-    onClose();
+    actionCallback();
+  };
+
+  const handleAddToCart = () => {
+    checkAuthAndProceed(() => {
+      if (availableStock <= 0) {
+        if (typeof onShowToast === "function")
+          onShowToast("Product is out of stock!", "error");
+        return;
+      }
+      for (let i = 0; i < quantity; i++) {
+        addToCart(product);
+      }
+      if (typeof onShowToast === "function") {
+        onShowToast(`Added ${quantity} item(s) to cart!`, "success");
+      }
+      onClose();
+    });
   };
 
   const handleBuyNow = () => {
-    if (availableStock <= 0) {
-      if (typeof onShowToast === "function")
-        onShowToast("Product is out of stock!", "error");
-      return;
-    }
-    for (let i = 0; i < quantity; i++) {
-      addToCart(product);
-    }
-    onClose();
-    if (typeof onDirectCheckout === "function") {
-      onDirectCheckout();
-    }
+    checkAuthAndProceed(() => {
+      if (availableStock <= 0) {
+        if (typeof onShowToast === "function")
+          onShowToast("Product is out of stock!", "error");
+        return;
+      }
+      for (let i = 0; i < quantity; i++) {
+        addToCart(product);
+      }
+      onClose();
+      if (typeof onDirectCheckout === "function") {
+        onDirectCheckout();
+      }
+    });
   };
 
   return (
@@ -100,38 +121,13 @@ export default function ProductDetailModal({
           ✕
         </button>
 
-        {/* ✨ Dynamic Professional Image Box */}
-        <div
-          className="modal-image-box"
-          style={{ backgroundColor: "#F8FAFC", position: "relative" }}
-        >
+        <div className="modal-image-box">
           <img
             src={finalImage}
             alt={product.name}
-            style={{
-              maxWidth: "100%",
-              maxHeight: "100%",
-              objectFit: "cover",
-              width: "100%",
-              height: "100%",
-              borderRadius: "8px",
-            }}
+            className="modal-product-img"
           />
-          <span
-            style={{
-              position: "absolute",
-              bottom: "10px",
-              left: "10px",
-              backgroundColor: "rgba(15, 23, 42, 0.75)",
-              color: "#FFFFFF",
-              padding: "4px 10px",
-              borderRadius: "6px",
-              fontSize: "11px",
-              fontWeight: "600",
-              textTransform: "uppercase",
-              letterSpacing: "0.5px",
-            }}
-          >
+          <span className="modal-category-badge">
             {product.category || "General"}
           </span>
         </div>
@@ -139,83 +135,42 @@ export default function ProductDetailModal({
         <div className="modal-content-box">
           <div>
             <h2 className="modal-title">{product.name}</h2>
-
-            {/* ✨ Dynamic Category-based Description */}
-            <p
-              style={{
-                fontSize: "14px",
-                color: "#64748B",
-                margin: "0 0 15px 0",
-                lineHeight: "1.5",
-              }}
-            >
-              {finalDescription}
-            </p>
+            <p className="modal-description">{finalDescription}</p>
 
             <div className="modal-price">
               ₨{calculatedPrice}
               {product.originalPrice && (
-                <span
-                  className="product-original-price"
-                  style={{ marginLeft: "10px" }}
-                >
+                <span className="product-original-price">
                   ₨{product.originalPrice * quantity}
                 </span>
               )}
             </div>
 
-            {/* ✨ Stock Status & Quantity Box */}
-            <div
-              style={{ margin: "10px 0", fontSize: "13px", fontWeight: "600" }}
-            >
+            <div className="stock-status-box">
               {availableStock > 0 ? (
-                <span style={{ color: "#16A34A" }}>
+                <span className="stock-in">
                   🟢 In Stock: {availableStock} available
                 </span>
               ) : (
-                <span style={{ color: "#DC2626" }}>🔴 Out of Stock</span>
+                <span className="stock-out">🔴 Out of Stock</span>
               )}
             </div>
 
             {availableStock > 0 ? (
               <div className="quantity-box">
-                <span
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: "600",
-                    color: "#334155",
-                  }}
-                >
-                  Quantity:
-                </span>
-                <div style={{ display: "flex", alignItems: "center" }}>
+                <span className="quantity-label">Quantity:</span>
+                <div className="quantity-controls">
                   <button
                     className="qty-btn"
                     onClick={() => setQuantity((q) => (q > 1 ? q - 1 : 1))}
                   >
                     -
                   </button>
-                  <span
-                    style={{
-                      padding: "0 20px",
-                      fontWeight: "bold",
-                      fontSize: "15px",
-                    }}
-                  >
-                    {quantity}
-                  </span>
+                  <span className="qty-value">{quantity}</span>
                   <button
                     className="qty-btn"
                     onClick={() =>
                       setQuantity((q) => (q < availableStock ? q + 1 : q))
-                    }
-                    style={{
-                      opacity: quantity >= availableStock ? 0.5 : 1,
-                      cursor:
-                        quantity >= availableStock ? "not-allowed" : "pointer",
-                    }}
-                    title={
-                      quantity >= availableStock ? "Maximum stock reached" : ""
                     }
                   >
                     +
@@ -223,20 +178,7 @@ export default function ProductDetailModal({
                 </div>
               </div>
             ) : (
-              <div
-                style={{
-                  padding: "10px",
-                  backgroundColor: "#FEF2F2",
-                  color: "#DC2626",
-                  textAlign: "center",
-                  borderRadius: "6px",
-                  fontWeight: "bold",
-                  fontSize: "14px",
-                  border: "1px solid #FECACA",
-                }}
-              >
-                Currently Out of Stock
-              </div>
+              <div className="out-of-stock-alert">Currently Out of Stock</div>
             )}
           </div>
 
@@ -245,10 +187,6 @@ export default function ProductDetailModal({
               className="btn-daraz-cart"
               onClick={handleAddToCart}
               disabled={availableStock <= 0}
-              style={{
-                opacity: availableStock <= 0 ? 0.6 : 1,
-                cursor: availableStock <= 0 ? "not-allowed" : "pointer",
-              }}
             >
               Add to Cart
             </button>
@@ -256,10 +194,6 @@ export default function ProductDetailModal({
               className="btn-daraz-buynow"
               onClick={handleBuyNow}
               disabled={availableStock <= 0}
-              style={{
-                opacity: availableStock <= 0 ? 0.6 : 1,
-                cursor: availableStock <= 0 ? "not-allowed" : "pointer",
-              }}
             >
               Buy Now
             </button>

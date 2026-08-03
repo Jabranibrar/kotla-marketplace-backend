@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { Resend } = require("resend");
+const { getOrderEmailTemplate } = require("./emailTemplate");
 require("dotenv").config();
 
 const app = express();
@@ -63,6 +64,20 @@ const orderSchema = new mongoose.Schema({
   createdAt: { type: String, default: () => new Date().toISOString() },
 });
 const Order = mongoose.model("Order", orderSchema);
+
+// --- Address Schema ---
+const addressSchema = new mongoose.Schema(
+  {
+    userId: { type: String, required: true },
+    name: { type: String, required: true },
+    phone: { type: String, required: true },
+    label: { type: String, default: "HOME" },
+    address: { type: String, required: true },
+    region: { type: String, required: true },
+  },
+  { timestamps: true }
+);
+const Address = mongoose.model("Address", addressSchema);
 
 app.get("/api/test", (req, res) => {
   res.json({ message: "✅ Backend is running!" });
@@ -164,6 +179,27 @@ app.delete("/api/products/:id", async (req, res) => {
   }
 });
 
+// --- Address API Endpoints ---
+app.get("/api/addresses/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const addresses = await Address.find({ userId });
+    res.json(addresses);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/api/addresses", async (req, res) => {
+  try {
+    const newAddress = new Address(req.body);
+    const savedAddress = await newAddress.save();
+    res.status(201).json(savedAddress);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.post("/api/orders", async (req, res) => {
   try {
     const {
@@ -200,48 +236,80 @@ app.post("/api/orders", async (req, res) => {
           from: "Kotla Marketplace <onboarding@resend.dev>",
           to: buyerEmail,
           subject: "🎉 Order Confirmed - Kotla Marketplace",
-          html: `
-          <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-            <h2 style="color: #2563EB;">Thank you for your order, ${
-              buyerName || "Customer"
-            }!</h2>
-            <p>Your order has been successfully placed via <b>${
-              paymentMethod || "COD"
-            }</b>.</p>
-            <h3>Shipping Address:</h3>
-            <p>${shippingAddress}</p>
-            <h3>Order Summary:</h3>
-            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-              <tr style="background-color: #F8FAFC; text-align: left;">
-                <th style="padding: 10px; border: 1px solid #E2E8F0;">Item</th>
-                <th style="padding: 10px; border: 1px solid #E2E8F0;">Qty</th>
-                <th style="padding: 10px; border: 1px solid #E2E8F0;">Price</th>
-              </tr>
-              ${items
-                .map(
-                  (item) => `
-                <tr>
-                  <td style="padding: 10px; border: 1px solid #E2E8F0;">${item.name}</td>
-                  <td style="padding: 10px; border: 1px solid #E2E8F0;">${item.quantity}</td>
-                  <td style="padding: 10px; border: 1px solid #E2E8F0;">₨ ${item.price}</td>
-                </tr>
-              `
-                )
-                .join("")}
-            </table>
-            <h3 style="color: #16A34A; margin-top: 15px;">Total Amount: ₨ ${totalAmount}</h3>
-            <p style="margin-top: 20px; font-size: 12px; color: #64748B;">Kotla Marketplace - Happy Shopping!</p>
-          </div>
-        `,
+          html: getOrderEmailTemplate(
+            buyerName,
+            paymentMethod,
+            items,
+            shippingAddress,
+            totalAmount
+          ),
         })
         .catch((emailErr) => {
-          console.error("❌ Email sending failed:", emailErr);
+          console.error("❌ Buyer Email sending failed:", emailErr);
         });
+    }
+
+    const sellerIds = [
+      ...new Set(items.map((i) => i.sellerId).filter(Boolean)),
+    ];
+
+    const sellers = await User.find({ _id: { $in: sellerIds } });
+    const sellerEmailMap = {};
+    sellers.forEach((s) => {
+      sellerEmailMap[s._id.toString()] = s.email;
+    });
+
+    for (const sellerId of sellerIds) {
+      const sellerEmail = sellerEmailMap[sellerId];
+      if (sellerEmail) {
+        const sellerItems = items.filter(
+          (i) => String(i.sellerId) === String(sellerId)
+        );
+        const sellerTotal = sellerItems.reduce(
+          (acc, curr) => acc + curr.price * curr.quantity,
+          0
+        );
+
+        resend.emails
+          .send({
+            from: "Kotla Marketplace <onboarding@resend.dev>",
+            to: sellerEmail,
+            subject: "📦 New Order Received for Your Shop! - Kotla Marketplace",
+            html: getOrderEmailTemplate(
+              `Seller (${buyerName} ordered)`,
+              paymentMethod,
+              sellerItems,
+              shippingAddress,
+              sellerTotal
+            ),
+          })
+          .catch((err) =>
+            console.error(`❌ Seller email failed for ${sellerEmail}:`, err)
+          );
+      }
+    }
+
+    const adminEmail = process.env.ADMIN_EMAIL || buyerEmail;
+    if (adminEmail) {
+      resend.emails
+        .send({
+          from: "Kotla Marketplace <onboarding@resend.dev>",
+          to: adminEmail,
+          subject: `🚨 New Order Placed (#${order._id}) - Admin Alert`,
+          html: getOrderEmailTemplate(
+            `Admin Report (${buyerName})`,
+            paymentMethod,
+            items,
+            shippingAddress,
+            totalAmount
+          ),
+        })
+        .catch((err) => console.error("❌ Admin copy email failed:", err));
     }
 
     res.json({
       success: true,
-      message: "Order placed successfully & email sent",
+      message: "Order placed successfully & notifications dispatched",
       order,
     });
   } catch (error) {
