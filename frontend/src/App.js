@@ -67,12 +67,10 @@ function App() {
 
   const handleSellClick = () => {
     if (!isLoggedIn) {
-      // If not logged in, take them to the Register Seller page directly
       setCurrentPage("register-seller");
     } else if (userType === "seller") {
       setCurrentPage("seller-dashboard");
     } else {
-      // If logged in as buyer, let them register as a seller
       setCurrentPage("register-seller");
     }
   };
@@ -124,6 +122,8 @@ function App() {
             setSearchQuery={setSearchQuery}
             onShowToast={showToast}
             onDirectCheckout={() => setCurrentPage("checkout")}
+            user={user}
+            onOpenLoginModal={() => setLoginOpen(true)}
           />
         )}
 

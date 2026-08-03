@@ -13,16 +13,18 @@ export default function Home({
   setSearchQuery,
   onShowToast,
   onDirectCheckout,
+  user, // 👈 Yahan user prop receive ki
+  onOpenLoginModal, // 👈 Yahan login modal open function receive kiya
 }) {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true); // <-- Loading state added
+  const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        setLoading(true); // Fetching shuru hone par loading true
+        setLoading(true);
         const response = await getProducts();
         setProducts(response.data);
       } catch (error) {
@@ -30,13 +32,12 @@ export default function Home({
           onShowToast("Error loading products", "error");
         }
       } finally {
-        setLoading(false); // Data fetch hone ke baad loading false
+        setLoading(false);
       }
     };
     fetchProducts();
   }, [onShowToast]);
 
-  // Filter by search and selected category filter
   const filteredProducts = products.filter((p) => {
     const matchesSearch = p.name
       .toLowerCase()
@@ -47,7 +48,6 @@ export default function Home({
     return matchesSearch && matchesCategory;
   });
 
-  // ✨ Cloths category added prominently at the top
   const categories = [
     { name: "All", label: "🔥 All Products", bg: "#F1F5F9", color: "#334155" },
     {
@@ -78,7 +78,6 @@ export default function Home({
         </p>
       </div>
 
-      {/* Active Search / Clear Bar Indicator */}
       {searchQuery && (
         <div
           style={{
@@ -111,7 +110,7 @@ export default function Home({
         </div>
       )}
 
-      {/* ✨ Professional Categories Filter Bar */}
+      {/* Categories Filter Bar */}
       <div
         style={{
           maxWidth: "1200px",
@@ -188,7 +187,6 @@ export default function Home({
           {!loading && `(${filteredProducts.length})`}
         </h2>
 
-        {/* 1. Agar data load ho raha hai -> Skeleton Loaders dikhayein */}
         {loading ? (
           <div className="products-grid">
             {[1, 2, 3, 4, 5, 6].map((n) => (
@@ -229,7 +227,6 @@ export default function Home({
             ))}
           </div>
         ) : filteredProducts.length === 0 ? (
-          /* 2. Agar loading khatam ho chuki aur sach mein koi product na mile */
           <div
             className="empty-state"
             style={{
@@ -246,7 +243,6 @@ export default function Home({
             </p>
           </div>
         ) : (
-          /* 3. Asli Products grid */
           <div className="products-grid">
             {filteredProducts.map((product) => (
               <div
@@ -322,6 +318,8 @@ export default function Home({
         onClose={() => setSelectedProduct(null)}
         onShowToast={onShowToast}
         onDirectCheckout={onDirectCheckout}
+        user={user}
+        onOpenLoginModal={onOpenLoginModal}
       />
     </div>
   );
