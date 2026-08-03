@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
-import { createOrder, getAddresses, addAddress } from "../api"; // Make sure getAddresses and addAddress are exported from your api.js
+import { createOrder, getAddresses, addAddress } from "../api";
 import "../styles/checkoutPage.css";
 
 export default function CheckoutPage({
@@ -18,16 +18,13 @@ export default function CheckoutPage({
 
   const userId = user?._id || user?.id || "guest";
 
-  // Main Confirmed State
   const [invoiceEmail, setInvoiceEmail] = useState(user?.email || "");
   const [addresses, setAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
 
-  // Temporary Modal State (Changes apply ONLY when SAVE is clicked)
   const [tempEmail, setTempEmail] = useState("");
   const [tempSelectedAddressId, setTempSelectedAddressId] = useState(null);
 
-  // New address form state
   const [newAddress, setNewAddress] = useState({
     fullName: user?.name || "",
     phone: "",
@@ -39,12 +36,11 @@ export default function CheckoutPage({
     label: "HOME",
   });
 
-  // Fetch saved addresses from backend on mount so they don't disappear
   useEffect(() => {
     const fetchUserAddresses = async () => {
       try {
         if (userId && userId !== "guest") {
-          const response = await getAddresses(userId); // Backend call to get user addresses
+          const response = await getAddresses(userId);
           if (response && response.length > 0) {
             setAddresses(response);
             setSelectedAddressId(response[0].id || response[0]._id);
@@ -377,7 +373,6 @@ export default function CheckoutPage({
         </div>
       </div>
 
-      {/* --- INVOICE AND CONTACT INFO MODAL --- */}
       {isInvoiceModalOpen && (
         <div
           className="daraz-modal-overlay"
@@ -501,7 +496,6 @@ export default function CheckoutPage({
         </div>
       )}
 
-      {/* --- ADDRESS SELECTION MODAL --- */}
       {isAddressModalOpen && (
         <div
           className="daraz-modal-overlay"
@@ -598,7 +592,6 @@ export default function CheckoutPage({
         </div>
       )}
 
-      {/* --- ADD NEW ADDRESS MODAL --- */}
       {isAddAddressOpen && (
         <div
           className="daraz-modal-overlay"

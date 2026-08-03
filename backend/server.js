@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const { Resend } = require("resend");
+const nodemailer = require("nodemailer");
 const { getOrderEmailTemplate } = require("./emailTemplate");
 require("dotenv").config();
 
@@ -11,7 +11,13 @@ app.use(express.json({ limit: "50mb" }));
 
 const PORT = process.env.PORT || 5000;
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 mongoose
   .connect(
@@ -229,9 +235,9 @@ app.post("/api/orders", async (req, res) => {
     }
 
     if (buyerEmail) {
-      resend.emails
-        .send({
-          from: "Kotla Marketplace <onboarding@resend.dev>",
+      transporter.sendMail(
+        {
+          from: `"Kotla Marketplace" <${process.env.EMAIL_USER}>`,
           to: buyerEmail,
           subject: "🎉 Order Confirmed - Kotla Marketplace",
           html: getOrderEmailTemplate(
@@ -241,10 +247,12 @@ app.post("/api/orders", async (req, res) => {
             shippingAddress,
             totalAmount
           ),
-        })
-        .catch((emailErr) => {
-          console.error("❌ Buyer Email sending failed:", emailErr);
-        });
+        },
+        (err, info) => {
+          if (err) console.error("❌ Buyer Email failed:", err);
+          else console.log("✅ Buyer Email sent:", info.response);
+        }
+      );
     }
 
     const sellerIds = [
@@ -275,9 +283,9 @@ app.post("/api/orders", async (req, res) => {
           0
         );
 
-        resend.emails
-          .send({
-            from: "Kotla Marketplace <onboarding@resend.dev>",
+        transporter.sendMail(
+          {
+            from: `"Kotla Marketplace" <${process.env.EMAIL_USER}>`,
             to: sellerEmail,
             subject: "📦 New Order Received for Your Shop! - Kotla Marketplace",
             html: getOrderEmailTemplate(
@@ -287,18 +295,25 @@ app.post("/api/orders", async (req, res) => {
               shippingAddress,
               sellerTotal
             ),
-          })
-          .catch((err) =>
-            console.error(`❌ Seller email failed for ${sellerEmail}:`, err)
-          );
+          },
+          (err, info) => {
+            if (err)
+              console.error(`❌ Seller email failed for ${sellerEmail}:`, err);
+            else
+              console.log(
+                `✅ Seller Email sent to ${sellerEmail}:`,
+                info.response
+              );
+          }
+        );
       }
     }
 
     const adminEmail = process.env.ADMIN_EMAIL || buyerEmail;
     if (adminEmail) {
-      resend.emails
-        .send({
-          from: "Kotla Marketplace <onboarding@resend.dev>",
+      transporter.sendMail(
+        {
+          from: `"Kotla Marketplace" <${process.env.EMAIL_USER}>`,
           to: adminEmail,
           subject: `🚨 New Order Placed (#${order._id}) - Admin Alert`,
           html: getOrderEmailTemplate(
@@ -308,8 +323,12 @@ app.post("/api/orders", async (req, res) => {
             shippingAddress,
             totalAmount
           ),
-        })
-        .catch((err) => console.error("❌ Admin copy email failed:", err));
+        },
+        (err, info) => {
+          if (err) console.error("❌ Admin copy email failed:", err);
+          else console.log("✅ Admin Email sent:", info.response);
+        }
+      );
     }
 
     res.json({
