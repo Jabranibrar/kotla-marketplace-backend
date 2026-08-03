@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 require("dotenv").config();
 
 const app = express();
@@ -10,26 +10,14 @@ app.use(express.json({ limit: "50mb" }));
 
 const PORT = process.env.PORT || 5000;
 
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 mongoose
   .connect(
     process.env.MONGODB_URI || "mongodb://localhost:27017/kotla-marketplace"
   )
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.log("❌ DB Error:", err));
-
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || "smtp.gmail.com",
-  port: Number(process.env.EMAIL_PORT) || 587,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-  family: 4,
-});
 
 const userSchema = new mongoose.Schema({
   name: String,
@@ -69,7 +57,7 @@ const orderSchema = new mongoose.Schema({
       name: String,
       price: Number,
       quantity: Number,
-      sellerId: String, // ✨ FIXED: Changed from ObjectId to String to prevent CastError
+      sellerId: String,
     },
   ],
   createdAt: { type: String, default: () => new Date().toISOString() },
@@ -207,11 +195,12 @@ app.post("/api/orders", async (req, res) => {
     }
 
     if (buyerEmail) {
-      const mailOptions = {
-        from: `"Kotla Marketplace" <${process.env.EMAIL_USER}>`,
-        to: buyerEmail,
-        subject: "🎉 Order Confirmed - Kotla Marketplace",
-        html: `
+      resend.emails
+        .send({
+          from: "Kotla Marketplace <onboarding@resend.dev>",
+          to: buyerEmail,
+          subject: "🎉 Order Confirmed - Kotla Marketplace",
+          html: `
           <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
             <h2 style="color: #2563EB;">Thank you for your order, ${
               buyerName || "Customer"
@@ -244,11 +233,10 @@ app.post("/api/orders", async (req, res) => {
             <p style="margin-top: 20px; font-size: 12px; color: #64748B;">Kotla Marketplace - Happy Shopping!</p>
           </div>
         `,
-      };
-
-      transporter.sendMail(mailOptions).catch((emailErr) => {
-        console.error("❌ Email sending failed:", emailErr);
-      });
+        })
+        .catch((emailErr) => {
+          console.error("❌ Email sending failed:", emailErr);
+        });
     }
 
     res.json({
