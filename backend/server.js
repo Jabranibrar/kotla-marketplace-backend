@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema({
   phone: String,
   type: String,
   shopName: String,
-  commission: { type: Number, default: 8 },
+  commission: { type: Number, default: 0 },
 });
 const User = mongoose.model("User", userSchema);
 
@@ -100,7 +100,15 @@ app.get("/api/test", (req, res) => {
 app.post("/api/auth/register", async (req, res) => {
   try {
     const { name, email, password, phone, type, shopName } = req.body;
-    const user = new User({ name, email, password, phone, type, shopName });
+    const user = new User({
+      name,
+      email,
+      password,
+      phone,
+      type,
+      shopName,
+      commission: 0,
+    });
     await user.save();
     res.json({ message: "User created", user });
   } catch (error) {
@@ -368,7 +376,7 @@ app.get("/api/seller/stats/:sellerId", async (req, res) => {
       return sum + sellerItemsSum;
     }, 0);
 
-    const totalCommission = Math.round(totalSales * 0.08);
+    const totalCommission = 0;
 
     res.json({
       stats: {
