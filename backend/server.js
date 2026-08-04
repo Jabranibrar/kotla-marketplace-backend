@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 const { getOrderEmailTemplate } = require("./emailTemplate");
 require("dotenv").config();
 
@@ -11,22 +11,7 @@ app.use(express.json({ limit: "50mb" }));
 
 const PORT = process.env.PORT || 5000;
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 mongoose
   .connect(
@@ -92,6 +77,20 @@ const addressSchema = new mongoose.Schema(
   { timestamps: true }
 );
 const Address = mongoose.model("Address", addressSchema);
+
+async function sendResendEmail(toEmail, subject, htmlContent) {
+  try {
+    const data = await resend.emails.send({
+      from: "Kotla Marketplace <onboarding@resend.dev>",
+      to: [toEmail],
+      subject: subject,
+      html: htmlContent,
+    });
+    console.log(`✅ Email sent successfully to ${toEmail}:`, data);
+  } catch (error) {
+    console.error(`❌ Resend API Error for ${toEmail}:`, error.message);
+  }
+}
 
 app.get("/api/test", (req, res) => {
   res.json({ message: "✅ Backend is running!" });
@@ -174,15 +173,13 @@ app.put("/api/products/:id", async (req, res) => {
         ((originalPrice - currentPrice) / originalPrice) * 100
       );
     }
-
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true }
     );
-    if (!updatedProduct) {
+    if (!updatedProduct)
       return res.status(404).json({ error: "Product not found" });
-    }
     res.json(updatedProduct);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -192,9 +189,8 @@ app.put("/api/products/:id", async (req, res) => {
 app.delete("/api/products/:id", async (req, res) => {
   try {
     const deletedProduct = await Product.findByIdAndDelete(req.params.id);
-    if (!deletedProduct) {
+    if (!deletedProduct)
       return res.status(404).json({ error: "Product not found" });
-    }
     res.json({ message: "Product deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -203,8 +199,7 @@ app.delete("/api/products/:id", async (req, res) => {
 
 app.get("/api/addresses/:userId", async (req, res) => {
   try {
-    const { userId } = req.params;
-    const addresses = await Address.find({ userId });
+    const addresses = await Address.find({ userId: req.params.userId });
     res.json(addresses);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -252,30 +247,22 @@ app.post("/api/orders", async (req, res) => {
     }
 
     if (buyerEmail) {
-      transporter.sendMail(
-        {
-          from: `"Kotla Marketplace" <${process.env.EMAIL_USER}>`,
-          to: buyerEmail,
-          subject: "🎉 Order Confirmed - Kotla Marketplace",
-          html: getOrderEmailTemplate(
-            buyerName,
-            paymentMethod,
-            items,
-            shippingAddress,
-            totalAmount
-          ),
-        },
-        (err, info) => {
-          if (err) console.error("❌ Buyer Email failed:", err);
-          else console.log("✅ Buyer Email sent:", info.response);
-        }
+      sendResendEmail(
+        buyerEmail,
+        "🎉 Order Confirmed - Kotla Marketplace",
+        getOrderEmailTemplate(
+          buyerName,
+          paymentMethod,
+          items,
+          shippingAddress,
+          totalAmount
+        )
       );
     }
 
     const sellerIds = [
       ...new Set(items.map((i) => i.sellerId).filter(Boolean)),
     ];
-
     const validSellerIds = sellerIds.filter((id) =>
       mongoose.Types.ObjectId.isValid(id)
     );
@@ -300,51 +287,32 @@ app.post("/api/orders", async (req, res) => {
           0
         );
 
-        transporter.sendMail(
-          {
-            from: `"Kotla Marketplace" <${process.env.EMAIL_USER}>`,
-            to: sellerEmail,
-            subject: "📦 New Order Received for Your Shop! - Kotla Marketplace",
-            html: getOrderEmailTemplate(
-              `Seller (${buyerName} ordered)`,
-              paymentMethod,
-              sellerItems,
-              shippingAddress,
-              sellerTotal
-            ),
-          },
-          (err, info) => {
-            if (err)
-              console.error(`❌ Seller email failed for ${sellerEmail}:`, err);
-            else
-              console.log(
-                `✅ Seller Email sent to ${sellerEmail}:`,
-                info.response
-              );
-          }
+        sendResendEmail(
+          sellerEmail,
+          "📦 New Order Received for Your Shop! - Kotla Marketplace",
+          getOrderEmailTemplate(
+            `Seller (${buyerName} ordered)`,
+            paymentMethod,
+            sellerItems,
+            shippingAddress,
+            sellerTotal
+          )
         );
       }
     }
 
-    const adminEmail = process.env.ADMIN_EMAIL || buyerEmail;
+    const adminEmail = process.env.ADMIN_EMAIL;
     if (adminEmail) {
-      transporter.sendMail(
-        {
-          from: `"Kotla Marketplace" <${process.env.EMAIL_USER}>`,
-          to: adminEmail,
-          subject: `🚨 New Order Placed (#${order._id}) - Admin Alert`,
-          html: getOrderEmailTemplate(
-            `Admin Report (${buyerName})`,
-            paymentMethod,
-            items,
-            shippingAddress,
-            totalAmount
-          ),
-        },
-        (err, info) => {
-          if (err) console.error("❌ Admin copy email failed:", err);
-          else console.log("✅ Admin Email sent:", info.response);
-        }
+      sendResendEmail(
+        adminEmail,
+        `🚨 New Order Placed (#${order._id}) - Admin Alert`,
+        getOrderEmailTemplate(
+          `Admin Report (${buyerName})`,
+          paymentMethod,
+          items,
+          shippingAddress,
+          totalAmount
+        )
       );
     }
 
@@ -361,7 +329,6 @@ app.post("/api/orders", async (req, res) => {
 app.get("/api/seller/stats/:sellerId", async (req, res) => {
   try {
     const products = await Product.find({ sellerId: req.params.sellerId });
-
     const allOrders = await Order.find();
     const sellerOrders = allOrders.filter((order) =>
       order.items.some(
@@ -376,14 +343,12 @@ app.get("/api/seller/stats/:sellerId", async (req, res) => {
       return sum + sellerItemsSum;
     }, 0);
 
-    const totalCommission = 0;
-
     res.json({
       stats: {
         totalProducts: products.length,
         totalOrders: sellerOrders.length,
         totalSales,
-        totalCommission,
+        totalCommission: 0,
       },
     });
   } catch (error) {
