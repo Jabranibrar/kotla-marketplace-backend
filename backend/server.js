@@ -11,7 +11,6 @@ app.use(express.json({ limit: "50mb" }));
 
 const PORT = process.env.PORT || 5000;
 
-// Mailgun setup
 const mg = new mailgun(FormData);
 const domain = process.env.MAILGUN_DOMAIN;
 const client = mg.client({
@@ -27,11 +26,11 @@ mongoose
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.log("❌ DB Error:", err));
 
-// Email function
+// Email function - FIXED ✅
 async function sendEmail(toEmail, subject, htmlContent) {
   try {
     const messageData = {
-      from: `Kotla Marketplace <mailgun@${domain}>`,
+      from: `Kotla Marketplace <postmaster@${domain}>`, // ✅ CHANGED from mailgun@ to postmaster@
       to: toEmail,
       subject: subject,
       html: htmlContent,
@@ -389,6 +388,7 @@ app.listen(PORT, () => {
 ║   🚀 KOTLA MARKETPLACE BACKEND      ║
 ║   Server running on port ${PORT}      ║
 ║   Mailgun Email: ✅ CONFIGURED      ║
+║   mg.kotlamarketplace.com           ║
 ║   http://localhost:${PORT}             ║
 ╚══════════════════════════════════════╝
   `);
