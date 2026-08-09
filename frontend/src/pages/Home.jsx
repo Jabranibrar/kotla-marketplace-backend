@@ -212,7 +212,9 @@ export default function Home({
           </svg>
         </div>
 
-        <h1 className="hero-title">Welcome to Kotla Store</h1>
+        <h1 className="hero-title">
+          Welcome to Kotla <span>Market</span>
+        </h1>
 
         <p className="hero-subtitle">
           Shop local products from trusted sellers with competitive prices,

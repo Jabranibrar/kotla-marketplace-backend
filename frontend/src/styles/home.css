@@ -40,7 +40,9 @@
   font-weight: 750;
   letter-spacing: -0.5px;
 }
-
+.hero-title span {
+  color: #2563eb;
+}
 .hero-subtitle {
   max-width: 680px;
   margin: 12px auto 0;
