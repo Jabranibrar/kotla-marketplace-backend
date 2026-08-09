@@ -19,8 +19,11 @@ export default function Home({
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
-
   const [viewMode, setViewMode] = useState("grid");
+
+  // ---------------------------------------------------------
+  // FETCH PRODUCTS
+  // ---------------------------------------------------------
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -44,19 +47,9 @@ export default function Home({
     fetchProducts();
   }, [onShowToast]);
 
-  const filteredProducts = products.filter((product) => {
-    const productName = String(product.name || "").toLowerCase();
-    const currentSearch = String(searchQuery || "").toLowerCase();
-
-    const matchesSearch = productName.includes(currentSearch);
-
-    const matchesCategory =
-      selectedCategory === "All" ||
-      String(product.category || "").toLowerCase() ===
-        selectedCategory.toLowerCase();
-
-    return matchesSearch && matchesCategory;
-  });
+  // ---------------------------------------------------------
+  // CATEGORIES
+  // ---------------------------------------------------------
 
   const categories = [
     {
@@ -70,12 +63,14 @@ export default function Home({
           fill="none"
           stroke="currentColor"
           strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           aria-hidden="true"
         >
-          <rect x="3" y="3" width="7" height="7" rx="1.5" />
-          <rect x="14" y="3" width="7" height="7" rx="1.5" />
-          <rect x="3" y="14" width="7" height="7" rx="1.5" />
-          <rect x="14" y="14" width="7" height="7" rx="1.5" />
+          <rect x="3" y="3" width="7" height="7" rx="1" />
+          <rect x="14" y="3" width="7" height="7" rx="1" />
+          <rect x="3" y="14" width="7" height="7" rx="1" />
+          <rect x="14" y="14" width="7" height="7" rx="1" />
         </svg>
       ),
     },
@@ -90,10 +85,12 @@ export default function Home({
           fill="none"
           stroke="currentColor"
           strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           aria-hidden="true"
         >
-          <path d="M20.4 4.8 16 3a4.5 4.5 0 0 1-8 0L3.6 4.8a2 2 0 0 0-1.2 2.1l.5 3.1H6v10h12V10h3.1l.5-3.1a2 2 0 0 0-1.2-2.1Z" />
-          <path d="M8 3c.5 1.5 1.8 2.5 4 2.5S15.5 4.5 16 3" />
+          <path d="M8 3h8l1.5 4L21 9l-2 4-3-1v9H8v-9l-3 1-2-4 3.5-2L8 3Z" />
+          <path d="M9 3c.4 2 1.4 3 3 3s2.6-1 3-3" />
         </svg>
       ),
     },
@@ -108,10 +105,14 @@ export default function Home({
           fill="none"
           stroke="currentColor"
           strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           aria-hidden="true"
         >
-          <path d="M8 3h8l1.5 3.5L21 8l-2 4-2-1v10H7V11l-2 1-2-4 3.5-1.5L8 3Z" />
-          <path d="M8 3c.5 2 1.8 3 4 3s3.5-1 4-3" />
+          <path d="M6 3h12" />
+          <path d="M9 3v4l-4 3v10h14V10l-4-3V3" />
+          <path d="M9 7h6" />
+          <path d="M8 20v-5h8v5" />
         </svg>
       ),
     },
@@ -126,11 +127,15 @@ export default function Home({
           fill="none"
           stroke="currentColor"
           strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           aria-hidden="true"
         >
-          <rect x="6" y="2.5" width="12" height="19" rx="2" />
-          <path d="M10 5h4" />
-          <path d="M11 18.5h2" />
+          <rect x="3" y="4" width="18" height="13" rx="2" />
+          <path d="M8 21h8" />
+          <path d="M12 17v4" />
+          <path d="M8 8h8" />
+          <path d="M8 12h5" />
         </svg>
       ),
     },
@@ -145,9 +150,12 @@ export default function Home({
           fill="none"
           stroke="currentColor"
           strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           aria-hidden="true"
         >
-          <path d="M14.7 6.3a4.5 4.5 0 0 0 5.9 5.9l-8.1 8.1a2.1 2.1 0 0 1-3-3l8.1-8.1a4.5 4.5 0 0 0-5.9-5.9l3 3-2.8 2.8-3-3a4.5 4.5 0 0 0 5.8-.8Z" />
+          <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4l-6 6a2 2 0 0 0 2.8 2.8l6-6a4 4 0 0 0 5.4-5.4l-2.3 2.3-2.8-2.8 2.3-2.3Z" />
+          <path d="m16 4 4 4" />
         </svg>
       ),
     },
@@ -162,16 +170,40 @@ export default function Home({
           fill="none"
           stroke="currentColor"
           strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           aria-hidden="true"
         >
-          <path d="M7 8h10v13H7z" />
-          <path d="M9 8V5a3 3 0 0 1 6 0v3" />
-          <path d="M5 8h14" />
-          <path d="M10 12h4" />
+          <path d="M9 3h6" />
+          <path d="M10 3v4l-2 3v10h8V10l-2-3V3" />
+          <path d="M8 13h8" />
+          <path d="M10 17h4" />
         </svg>
       ),
     },
   ];
+
+  // ---------------------------------------------------------
+  // FILTER PRODUCTS
+  // ---------------------------------------------------------
+
+  const filteredProducts = products.filter((product) => {
+    const productName = String(product.name || "").toLowerCase();
+    const currentSearch = String(searchQuery || "").toLowerCase();
+
+    const matchesSearch = productName.includes(currentSearch);
+
+    const matchesCategory =
+      selectedCategory === "All" ||
+      String(product.category || "").toLowerCase() ===
+        selectedCategory.toLowerCase();
+
+    return matchesSearch && matchesCategory;
+  });
+
+  // ---------------------------------------------------------
+  // PRODUCTS HEADING
+  // ---------------------------------------------------------
 
   const getProductsHeading = () => {
     if (searchQuery) {
@@ -189,6 +221,10 @@ export default function Home({
     return "Featured Products";
   };
 
+  // ---------------------------------------------------------
+  // PRODUCT KEYBOARD ACCESSIBILITY
+  // ---------------------------------------------------------
+
   const handleProductKeyDown = (event, product) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
@@ -196,8 +232,16 @@ export default function Home({
     }
   };
 
+  // ---------------------------------------------------------
+  // RENDER
+  // ---------------------------------------------------------
+
   return (
-    <div className="kotla-home-page">
+    <div className="home-page">
+      {/* ---------------------------------------------------
+          HERO
+      --------------------------------------------------- */}
+
       <div className="hero-banner">
         <div className="hero-icon">
           <svg
@@ -221,6 +265,10 @@ export default function Home({
           convenient delivery and secure Cash on Delivery.
         </p>
       </div>
+
+      {/* ---------------------------------------------------
+          SEARCH RESULT BAR
+      --------------------------------------------------- */}
 
       {searchQuery && (
         <div className="kotla-search-result-bar">
@@ -256,264 +304,126 @@ export default function Home({
         </div>
       )}
 
-      <div className="kotla-categories-wrapper">
-        <div className="kotla-categories-header">
-          <div>
+      {/* ---------------------------------------------------
+          MARKETPLACE AREA
+      --------------------------------------------------- */}
+
+      <div className="kotla-marketplace-layout">
+        {/* -------------------------------------------------
+            LEFT CATEGORY SIDEBAR
+        ------------------------------------------------- */}
+
+        <aside className="kotla-category-sidebar">
+          <div className="kotla-category-sidebar-header">
             <span className="kotla-section-eyebrow">Browse</span>
-            <h2 className="kotla-categories-title">Shop by Category</h2>
+
+            <h2>Categories</h2>
+          </div>
+
+          <div className="kotla-category-sidebar-list">
+            {categories.map((cat) => {
+              const isActive = selectedCategory === cat.name;
+
+              return (
+                <button
+                  key={cat.name}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat.name)}
+                  className={`kotla-sidebar-category ${
+                    isActive ? "active" : ""
+                  }`}
+                  style={{
+                    "--category-color": cat.color,
+                    "--category-bg": cat.bg,
+                  }}
+                  aria-pressed={isActive}
+                >
+                  <span className="kotla-sidebar-category-icon">
+                    {cat.icon}
+                  </span>
+
+                  <span className="kotla-sidebar-category-name">
+                    {cat.label}
+                  </span>
+
+                  {isActive && (
+                    <span className="kotla-sidebar-category-arrow">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="m9 18 6-6-6-6" />
+                      </svg>
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           {selectedCategory !== "All" && (
             <button
               type="button"
-              className="kotla-reset-category-btn"
+              className="kotla-sidebar-view-all"
               onClick={() => setSelectedCategory("All")}
             >
-              View All
-            </button>
-          )}
-        </div>
-
-        <div className="kotla-categories-list">
-          {categories.map((cat) => {
-            const isActive = selectedCategory === cat.name;
-
-            return (
-              <button
-                key={cat.name}
-                type="button"
-                onClick={() => setSelectedCategory(cat.name)}
-                className={`category-card ${isActive ? "active" : ""}`}
-                style={{
-                  "--category-color": cat.color,
-                  "--category-bg": cat.bg,
-                }}
-                aria-pressed={isActive}
-              >
-                <span className="category-icon">{cat.icon}</span>
-
-                <span className="category-label">{cat.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="products-section kotla-products-section">
-        <div className="kotla-products-header">
-          <div>
-            <span className="kotla-section-eyebrow">Marketplace</span>
-
-            <h2 className="section-title">{getProductsHeading()}</h2>
-          </div>
-
-          <div className="kotla-products-toolbar">
-            {!loading && (
-              <span className="kotla-products-count">
-                {filteredProducts.length}{" "}
-                {filteredProducts.length === 1 ? "Product" : "Products"}
-              </span>
-            )}
-
-            <div
-              className="kotla-view-switcher"
-              role="group"
-              aria-label="Product view"
-            >
-              <button
-                type="button"
-                className={`kotla-view-btn ${
-                  viewMode === "grid" ? "active" : ""
-                }`}
-                onClick={() => setViewMode("grid")}
-                aria-label="Grid view"
-                aria-pressed={viewMode === "grid"}
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  aria-hidden="true"
-                >
-                  <rect x="3" y="3" width="7" height="7" rx="1" />
-                  <rect x="14" y="3" width="7" height="7" rx="1" />
-                  <rect x="3" y="14" width="7" height="7" rx="1" />
-                  <rect x="14" y="14" width="7" height="7" rx="1" />
-                </svg>
-
-                <span>Grid</span>
-              </button>
-
-              <button
-                type="button"
-                className={`kotla-view-btn ${
-                  viewMode === "list" ? "active" : ""
-                }`}
-                onClick={() => setViewMode("list")}
-                aria-label="List view"
-                aria-pressed={viewMode === "list"}
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  aria-hidden="true"
-                >
-                  <rect x="4" y="5" width="16" height="3" rx="1" />
-                  <rect x="4" y="10.5" width="16" height="3" rx="1" />
-                  <rect x="4" y="16" width="16" height="3" rx="1" />
-                </svg>
-
-                <span>List</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {loading ? (
-          <div
-            className={viewMode === "list" ? "products-list" : "products-grid"}
-          >
-            {[1, 2, 3, 4, 5, 6].map((n) => (
-              <div key={n} className="product-card kotla-product-skeleton">
-                <div className="kotla-skeleton-image" />
-
-                <div className="kotla-skeleton-content">
-                  <div className="kotla-skeleton-title" />
-                  <div className="kotla-skeleton-price" />
-                  <div className="kotla-skeleton-stock" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : filteredProducts.length === 0 ? (
-          <div className="empty-state kotla-empty-state">
-            <div className="kotla-empty-icon">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.6"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 aria-hidden="true"
               >
-                <path d="M4 7h16l-1 13H5L4 7Z" />
-                <path d="M8 7a4 4 0 0 1 8 0" />
-                <path d="M9 12h6" />
+                <path d="M3 12h18" />
+                <path d="m12 5 7 7-7 7" />
               </svg>
-            </div>
+              View All Products
+            </button>
+          )}
+        </aside>
 
-            <h3 className="kotla-empty-title">No products found</h3>
+        {/* -------------------------------------------------
+            PRODUCTS CONTENT
+        ------------------------------------------------- */}
 
-            <p className="kotla-empty-text">
-              We couldn't find any products matching your current search or
-              category.
-            </p>
+        <section className="kotla-products-area">
+          <div className="products-section kotla-products-section">
+            <div className="kotla-products-header">
+              <div>
+                <span className="kotla-section-eyebrow">Marketplace</span>
 
-            {(searchQuery || selectedCategory !== "All") && (
-              <button
-                type="button"
-                className="kotla-empty-reset-btn"
-                onClick={() => {
-                  setSelectedCategory("All");
+                <h2 className="section-title">{getProductsHeading()}</h2>
+              </div>
 
-                  if (typeof setSearchQuery === "function") {
-                    setSearchQuery("");
-                  }
-                }}
-              >
-                Browse All Products
-              </button>
-            )}
-          </div>
-        ) : (
-          <div
-            className={viewMode === "list" ? "products-list" : "products-grid"}
-          >
-            {filteredProducts.map((product) => (
-              <div
-                key={product._id || product.id}
-                className="product-card"
-                onClick={() => setSelectedProduct(product)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(event) => handleProductKeyDown(event, product)}
-              >
-                <div className="product-image kotla-product-image">
-                  <img
-                    src={
-                      product.image && product.image.trim() !== ""
-                        ? product.image
-                        : DEFAULT_PRODUCT_IMAGE
-                    }
-                    alt={product.name || "Product"}
-                    loading="lazy"
-                  />
+              <div className="kotla-products-toolbar">
+                {!loading && (
+                  <span className="kotla-products-count">
+                    {filteredProducts.length}{" "}
+                    {filteredProducts.length === 1 ? "Product" : "Products"}
+                  </span>
+                )}
 
-                  {product.discount > 0 && (
-                    <div className="product-discount-badge">
-                      -{product.discount}%
-                    </div>
-                  )}
-
-                  <div className="kotla-product-image-overlay">
-                    <span>View Details</span>
-                  </div>
-                </div>
-
-                <div className="product-info">
-                  <div className="kotla-product-category">
-                    {String(product.category || "Marketplace").replace(
-                      /^./,
-                      (letter) => letter.toUpperCase()
-                    )}
-                  </div>
-
-                  <h3 className="product-name">{product.name}</h3>
-
-                  <div className="product-price-box">
-                    {product.originalPrice && (
-                      <span className="product-original-price">
-                        ₨{Number(product.originalPrice).toLocaleString()}
-                      </span>
-                    )}
-
-                    <span className="product-current-price">
-                      ₨{Number(product.currentPrice || 0).toLocaleString()}
-                    </span>
-                  </div>
-
-                  <div
-                    className={`product-stock ${
-                      product.stock > 0 ? "in-stock" : "out-stock"
+                <div
+                  className="kotla-view-switcher"
+                  role="group"
+                  aria-label="Product view"
+                >
+                  <button
+                    type="button"
+                    className={`kotla-view-btn ${
+                      viewMode === "grid" ? "active" : ""
                     }`}
+                    onClick={() => setViewMode("grid")}
+                    aria-label="Grid view"
+                    aria-pressed={viewMode === "grid"}
                   >
-                    <span className="kotla-stock-icon">
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                        aria-hidden="true"
-                      >
-                        <path d="M3 7h13v10H3z" />
-                        <path d="M16 10h3l2 3v4h-5z" />
-                        <circle cx="7" cy="19" r="1.5" />
-                        <circle cx="18" cy="19" r="1.5" />
-                      </svg>
-                    </span>
-
-                    <span>
-                      {product.stock > 0
-                        ? `${product.stock} in stock`
-                        : "Out of stock"}
-                    </span>
-                  </div>
-
-                  <div className="kotla-list-product-action">
-                    <span>View Product</span>
-
                     <svg
                       viewBox="0 0 24 24"
                       fill="none"
@@ -521,16 +431,223 @@ export default function Home({
                       strokeWidth="1.8"
                       aria-hidden="true"
                     >
-                      <path d="M5 12h14" />
-                      <path d="m13 6 6 6-6 6" />
+                      <rect x="3" y="3" width="7" height="7" rx="1" />
+                      <rect x="14" y="3" width="7" height="7" rx="1" />
+                      <rect x="3" y="14" width="7" height="7" rx="1" />
+                      <rect x="14" y="14" width="7" height="7" rx="1" />
                     </svg>
-                  </div>
+
+                    <span>Grid</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`kotla-view-btn ${
+                      viewMode === "list" ? "active" : ""
+                    }`}
+                    onClick={() => setViewMode("list")}
+                    aria-label="List view"
+                    aria-pressed={viewMode === "list"}
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      aria-hidden="true"
+                    >
+                      <rect x="4" y="5" width="16" height="3" rx="1" />
+                      <rect x="4" y="10.5" width="16" height="3" rx="1" />
+                      <rect x="4" y="16" width="16" height="3" rx="1" />
+                    </svg>
+
+                    <span>List</span>
+                  </button>
                 </div>
               </div>
-            ))}
+            </div>
+
+            {/* -------------------------------------------------
+                LOADING
+            ------------------------------------------------- */}
+
+            {loading ? (
+              <div
+                className={
+                  viewMode === "list" ? "products-list" : "products-grid"
+                }
+              >
+                {[1, 2, 3, 4, 5, 6].map((n) => (
+                  <div key={n} className="product-card kotla-product-skeleton">
+                    <div className="kotla-skeleton-image" />
+
+                    <div className="kotla-skeleton-content">
+                      <div className="kotla-skeleton-title" />
+                      <div className="kotla-skeleton-price" />
+                      <div className="kotla-skeleton-stock" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredProducts.length === 0 ? (
+              /* -------------------------------------------------
+                  EMPTY STATE
+              ------------------------------------------------- */
+
+              <div className="empty-state kotla-empty-state">
+                <div className="kotla-empty-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    aria-hidden="true"
+                  >
+                    <path d="M4 7h16l-1 13H5L4 7Z" />
+                    <path d="M8 7a4 4 0 0 1 8 0" />
+                    <path d="M9 12h6" />
+                  </svg>
+                </div>
+
+                <h3 className="kotla-empty-title">No products found</h3>
+
+                <p className="kotla-empty-text">
+                  We couldn't find any products matching your current search or
+                  category.
+                </p>
+
+                {(searchQuery || selectedCategory !== "All") && (
+                  <button
+                    type="button"
+                    className="kotla-empty-reset-btn"
+                    onClick={() => {
+                      setSelectedCategory("All");
+
+                      if (typeof setSearchQuery === "function") {
+                        setSearchQuery("");
+                      }
+                    }}
+                  >
+                    Browse All Products
+                  </button>
+                )}
+              </div>
+            ) : (
+              /* -------------------------------------------------
+                  PRODUCTS
+              ------------------------------------------------- */
+
+              <div
+                className={
+                  viewMode === "list" ? "products-list" : "products-grid"
+                }
+              >
+                {filteredProducts.map((product) => (
+                  <div
+                    key={product._id || product.id}
+                    className="product-card"
+                    onClick={() => setSelectedProduct(product)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(event) => handleProductKeyDown(event, product)}
+                  >
+                    <div className="product-image kotla-product-image">
+                      <img
+                        src={
+                          product.image && product.image.trim() !== ""
+                            ? product.image
+                            : DEFAULT_PRODUCT_IMAGE
+                        }
+                        alt={product.name || "Product"}
+                        loading="lazy"
+                      />
+
+                      {product.discount > 0 && (
+                        <div className="product-discount-badge">
+                          -{product.discount}%
+                        </div>
+                      )}
+
+                      <div className="kotla-product-image-overlay">
+                        <span>View Details</span>
+                      </div>
+                    </div>
+
+                    <div className="product-info">
+                      <div className="kotla-product-category">
+                        {String(product.category || "Marketplace").replace(
+                          /^./,
+                          (letter) => letter.toUpperCase()
+                        )}
+                      </div>
+
+                      <h3 className="product-name">{product.name}</h3>
+
+                      <div className="product-price-box">
+                        {product.originalPrice && (
+                          <span className="product-original-price">
+                            ₨{Number(product.originalPrice).toLocaleString()}
+                          </span>
+                        )}
+
+                        <span className="product-current-price">
+                          ₨{Number(product.currentPrice || 0).toLocaleString()}
+                        </span>
+                      </div>
+
+                      <div
+                        className={`product-stock ${
+                          product.stock > 0 ? "in-stock" : "out-stock"
+                        }`}
+                      >
+                        <span className="kotla-stock-icon">
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            aria-hidden="true"
+                          >
+                            <path d="M3 7h13v10H3z" />
+                            <path d="M16 10h3l2 3v4h-5z" />
+                            <circle cx="7" cy="19" r="1.5" />
+                            <circle cx="18" cy="19" r="1.5" />
+                          </svg>
+                        </span>
+
+                        <span>
+                          {product.stock > 0
+                            ? `${product.stock} in stock`
+                            : "Out of stock"}
+                        </span>
+                      </div>
+
+                      <div className="kotla-list-product-action">
+                        <span>View Product</span>
+
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          aria-hidden="true"
+                        >
+                          <path d="M5 12h14" />
+                          <path d="m13 6 6 6-6 6" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </section>
       </div>
+
+      {/* ---------------------------------------------------
+          PRODUCT DETAIL MODAL
+      --------------------------------------------------- */}
 
       <ProductDetailModal
         product={selectedProduct}

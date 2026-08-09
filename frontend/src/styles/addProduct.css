@@ -170,6 +170,7 @@
 
 /* Action Buttons Container */
 .kotla-modal-actions {
+  width: fit-content;
   display: flex;
   gap: 12px;
   margin-top: 24px;

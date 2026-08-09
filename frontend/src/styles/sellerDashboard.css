@@ -81,7 +81,7 @@
 
 .seller-dashboard-primary-btn span {
   font-size: 18px;
-  line-height: 1;
+  line-height: 0;
 }
 
 .seller-dashboard-primary-btn--secondary {
