@@ -13,6 +13,7 @@ export default function Header({
   user,
   onNavigate,
   totalItems = 0,
+  totalPrice = 0,
 }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -23,12 +24,17 @@ export default function Header({
         setDropdownOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const handleMenuClick = (action) => {
     setDropdownOpen(false);
+
     if (action === "logout") {
       onLogout();
     } else if (typeof onNavigate === "function") {
@@ -38,22 +44,38 @@ export default function Header({
 
   const getUserInitials = (name) => {
     if (!name) return "U";
+
     const parts = name.trim().split(" ");
+
     if (parts.length >= 2) {
       return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
     }
+
     return parts[0][0].toUpperCase();
   };
+
+  const formattedCartTotal = Number(totalPrice || 0).toLocaleString("en-PK", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
   return (
     <header className="kotla-header">
       <div className="kotla-header-container">
-        {/* Logo */}
-        <div className="kotla-logo" onClick={() => handleMenuClick("home")}>
+        <div
+          className="kotla-logo"
+          onClick={() => handleMenuClick("home")}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              handleMenuClick("home");
+            }
+          }}
+        >
           Kotla<span>Market</span>
         </div>
 
-        {/* Search Bar */}
         <div className="kotla-search-box">
           <span className="kotla-search-icon">
             <svg
@@ -63,49 +85,80 @@ export default function Header({
               stroke="currentColor"
               strokeWidth="2"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
           </span>
+
           <input
             type="text"
-            placeholder="Search for products, brands and more..."
+            placeholder="Search products, brands and more..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
+            aria-label="Search products"
           />
+
           {searchQuery && (
             <button
+              type="button"
               className="kotla-clear-search"
               onClick={() => onSearchChange("")}
+              aria-label="Clear search"
             >
-              ✕
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
+                <path d="M6 6l12 12" />
+                <path d="M18 6 6 18" />
+              </svg>
             </button>
           )}
         </div>
 
-        {/* Actions (Sell, Cart, Profile/Sign In) */}
         <div className="kotla-header-actions">
-          <button className="kotla-sell-btn" onClick={onSellClick}>
+          <button
+            type="button"
+            className="kotla-sell-btn"
+            onClick={onSellClick}
+          >
             {userType === "seller" ? "Seller Dashboard" : "Become a Seller"}
           </button>
 
-          <button className="kotla-cart-btn" onClick={onCartClick}>
-            <svg
-              width="22"
-              height="22"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-            >
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <path d="M16 10a4 4 0 0 1-8 0"></path>
-            </svg>
-            {totalItems > 0 && (
-              <span className="kotla-cart-badge">{totalItems}</span>
-            )}
+          <button
+            type="button"
+            className="kotla-cart-btn"
+            onClick={onCartClick}
+            aria-label={`Cart with ${totalItems} items`}
+          >
+            <span className="kotla-cart-icon-wrapper">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                aria-hidden="true"
+              >
+                <path d="M6 8h12l1 13H5L6 8Z" />
+                <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+              </svg>
+
+              {totalItems > 0 && (
+                <span className="kotla-cart-badge">
+                  {totalItems > 99 ? "99+" : totalItems}
+                </span>
+              )}
+            </span>
+
+            <span className="kotla-cart-summary">
+              <span className="kotla-cart-label">Cart</span>
+              <span className="kotla-cart-total">₨{formattedCartTotal}</span>
+            </span>
           </button>
 
           {isLoggedIn ? (
@@ -115,19 +168,36 @@ export default function Header({
                   dropdownOpen ? "active" : ""
                 }`}
                 onClick={() => setDropdownOpen(!dropdownOpen)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    setDropdownOpen(!dropdownOpen);
+                  }
+                }}
               >
                 <div className="kotla-user-avatar">
                   {getUserInitials(user?.name)}
                 </div>
+
                 <span className="kotla-user-name">
                   {user?.name?.split(" ")[0] || "Account"}
                 </span>
+
                 <span
                   className={`kotla-dropdown-arrow ${
                     dropdownOpen ? "open" : ""
                   }`}
                 >
-                  ▼
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    aria-hidden="true"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
                 </span>
               </div>
 
@@ -135,9 +205,11 @@ export default function Header({
                 <div className="kotla-dropdown-menu">
                   <div className="kotla-dropdown-header">
                     <p className="kotla-signed-label">Signed in as</p>
+
                     <p className="kotla-signed-name">
                       {user?.name || "Kotla User"}
                     </p>
+
                     <span
                       className={`kotla-user-type-badge ${
                         userType === "seller" ? "seller" : "buyer"
@@ -150,36 +222,117 @@ export default function Header({
                   </div>
 
                   <div className="kotla-dropdown-links">
-                    <button onClick={() => handleMenuClick("home")}>
-                      <span>👤</span> My Profile
+                    <button
+                      type="button"
+                      onClick={() => handleMenuClick("home")}
+                    >
+                      <span className="kotla-menu-icon">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          aria-hidden="true"
+                        >
+                          <circle cx="12" cy="8" r="3" />
+                          <path d="M5 20a7 7 0 0 1 14 0" />
+                        </svg>
+                      </span>
+                      My Profile
                     </button>
-                    <button onClick={() => handleMenuClick("orders")}>
-                      <span>📦</span> My Orders
+
+                    <button
+                      type="button"
+                      onClick={() => handleMenuClick("orders")}
+                    >
+                      <span className="kotla-menu-icon">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          aria-hidden="true"
+                        >
+                          <path d="M4 7h16v13H4z" />
+                          <path d="M8 7V5a4 4 0 0 1 8 0v2" />
+                        </svg>
+                      </span>
+                      My Orders
                     </button>
-                    <button onClick={() => handleMenuClick("addresses")}>
-                      <span>📍</span> Saved Addresses
+
+                    <button
+                      type="button"
+                      onClick={() => handleMenuClick("addresses")}
+                    >
+                      <span className="kotla-menu-icon">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          aria-hidden="true"
+                        >
+                          <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+                          <circle cx="12" cy="10" r="2.5" />
+                        </svg>
+                      </span>
+                      Saved Addresses
                     </button>
 
                     {userType === "seller" && (
                       <button
+                        type="button"
                         className="seller-dashboard-link"
                         onClick={() => handleMenuClick("seller-dashboard")}
                       >
-                        <span>📊</span> Seller Dashboard
+                        <span className="kotla-menu-icon">
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            aria-hidden="true"
+                          >
+                            <path d="M4 19V5" />
+                            <path d="M4 19h16" />
+                            <path d="m7 15 4-5 3 3 5-7" />
+                          </svg>
+                        </span>
+                        Seller Dashboard
                       </button>
                     )}
                   </div>
 
                   <div className="kotla-dropdown-footer">
-                    <button onClick={() => handleMenuClick("logout")}>
-                      <span>🚪</span> Sign Out
+                    <button
+                      type="button"
+                      onClick={() => handleMenuClick("logout")}
+                    >
+                      <span className="kotla-menu-icon">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          aria-hidden="true"
+                        >
+                          <path d="M10 17l5-5-5-5" />
+                          <path d="M15 12H3" />
+                          <path d="M20 4v16" />
+                        </svg>
+                      </span>
+                      Sign Out
                     </button>
                   </div>
                 </div>
               )}
             </div>
           ) : (
-            <button className="kotla-signin-btn" onClick={onLoginClick}>
+            <button
+              type="button"
+              className="kotla-signin-btn"
+              onClick={onLoginClick}
+            >
               Sign In
             </button>
           )}

@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const mailgun = require("mailgun.js");
 const FormData = require("form-data");
+const twilio = require("twilio");
 require("dotenv").config();
 
 const app = express();
@@ -18,7 +19,12 @@ const client = mg.client({
   key: process.env.MAILGUN_API_KEY,
 });
 
-// MongoDB Connection
+const twilioClient = twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
+const twilioWhatsAppNumber = process.env.TWILIO_WHATSAPP_NUMBER;
+
 mongoose
   .connect(
     process.env.MONGODB_URI || "mongodb://localhost:27017/kotla-marketplace"
@@ -26,24 +32,59 @@ mongoose
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.log("❌ DB Error:", err));
 
-// Email function - FIXED ✅
 async function sendEmail(toEmail, subject, htmlContent) {
   try {
     const messageData = {
-      from: `Kotla Marketplace <postmaster@${domain}>`, // ✅ CHANGED from mailgun@ to postmaster@
+      from: `Kotla Marketplace <postmaster@${domain}>`,
       to: toEmail,
       subject: subject,
       html: htmlContent,
     };
-
     await client.messages.create(domain, messageData);
     console.log(`✅ Email sent to ${toEmail}`);
   } catch (error) {
-    console.error(`❌ Mailgun Error for ${toEmail}:`, error.message);
+    console.error(`❌ Email Error: ${error.message}`);
   }
 }
 
-// Schemas
+async function sendWhatsApp(buyerPhone, buyerName, orderDetails) {
+  try {
+    let formattedPhone = buyerPhone.trim();
+    if (!formattedPhone.startsWith("+")) {
+      if (formattedPhone.startsWith("0")) {
+        formattedPhone = "+92" + formattedPhone.substring(1);
+      } else {
+        formattedPhone = "+92" + formattedPhone;
+      }
+    }
+
+    const message = await twilioClient.messages.create({
+      body: `Dear ${buyerName},
+
+Thank you for your order! 🎉
+
+📦 Order Details:
+Order #: ${orderDetails.orderId}
+Total: ₨${orderDetails.total}
+Items: ${orderDetails.itemCount}
+Address: ${orderDetails.address}
+Payment: ${orderDetails.paymentMethod}
+
+Status: Processing ⏳
+Expected delivery: 2-3 days
+
+Thank you,
+Kotla Marketplace 🙏`,
+      from: twilioWhatsAppNumber,
+      to: `whatsapp:${formattedPhone}`,
+    });
+
+    console.log(`✅ WhatsApp sent to ${formattedPhone}`);
+  } catch (error) {
+    console.error(`❌ WhatsApp Error: ${error.message}`);
+  }
+}
+
 const userSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
@@ -73,6 +114,7 @@ const orderSchema = new mongoose.Schema({
   buyerId: String,
   buyerName: String,
   buyerEmail: String,
+  buyerPhone: String,
   shippingAddress: String,
   paymentMethod: String,
   totalAmount: Number,
@@ -102,7 +144,6 @@ const addressSchema = new mongoose.Schema(
 );
 const Address = mongoose.model("Address", addressSchema);
 
-// API Routes
 app.get("/api/test", (req, res) => {
   res.json({ message: "✅ Backend is running!" });
 });
@@ -167,6 +208,95 @@ app.post("/api/products", async (req, res) => {
   }
 });
 
+app.put("/api/products/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      name,
+      originalPrice,
+      currentPrice,
+      stock,
+      category,
+      image,
+      sellerId,
+    } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid product ID" });
+    }
+
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    if (String(product.sellerId) !== String(sellerId)) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    const discount = originalPrice
+      ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100)
+      : 0;
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      {
+        name,
+        originalPrice,
+        currentPrice,
+        discount,
+        stock,
+        category,
+        image,
+      },
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+      message: "Product updated",
+      product: updatedProduct,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete("/api/products/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { sellerId } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid product ID" });
+    }
+
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    if (String(product.sellerId) !== String(sellerId)) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    await Product.findByIdAndDelete(id);
+    res.json({ success: true, message: "Product deleted" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/api/products/seller/:sellerId", async (req, res) => {
+  try {
+    const { sellerId } = req.params;
+    const products = await Product.find({ sellerId });
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get("/api/addresses/:userId", async (req, res) => {
   try {
     const addresses = await Address.find({ userId: req.params.userId });
@@ -186,27 +316,26 @@ app.post("/api/addresses", async (req, res) => {
   }
 });
 
-// ORDER ENDPOINT - EMAILS SEND HOTA HAI
 app.post("/api/orders", async (req, res) => {
   try {
     const {
       buyerId,
       buyerName,
       buyerEmail,
+      buyerPhone,
       items,
       totalAmount,
       shippingAddress,
       paymentMethod,
     } = req.body;
 
-    console.log("📋 ORDER RECEIVED:");
-    console.log("Buyer:", buyerName, buyerEmail);
-    console.log("Items:", items.length);
+    console.log("📋 ORDER:", buyerName, buyerEmail);
 
     const order = new Order({
       buyerId,
       buyerName,
       buyerEmail,
+      buyerPhone,
       items,
       totalAmount,
       shippingAddress,
@@ -215,47 +344,47 @@ app.post("/api/orders", async (req, res) => {
 
     await order.save();
 
-    // Update products
     for (const item of items) {
       await Product.findByIdAndUpdate(item.productId, {
         $inc: { sold: item.quantity, stock: -item.quantity },
       });
     }
 
-    // ========== SEND TO BUYER ==========
     if (buyerEmail) {
-      console.log("📧 Sending email to BUYER:", buyerEmail);
+      console.log("📧 Email to BUYER:", buyerEmail);
       sendEmail(
         buyerEmail,
         "🎉 Order Confirmed - Kotla Marketplace",
-        `
-        <div style="font-family: Arial; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
-          <h2 style="color: #333;">Hello ${buyerName}!</h2>
+        `<div style="font-family: Arial; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
+          <h2>Hello ${buyerName}!</h2>
           <p>Thank you for your order! ✅</p>
-          
           <div style="background: white; padding: 15px; border-radius: 5px; margin: 20px 0;">
             <h3 style="color: #d32f2f;">Order Summary</h3>
             <p><strong>Order ID:</strong> #${order._id}</p>
             <p><strong>Total Amount:</strong> ₨${totalAmount}</p>
             <p><strong>Payment Method:</strong> ${paymentMethod}</p>
-            <p><strong>Shipping Address:</strong> ${shippingAddress}</p>
+            <p><strong>Address:</strong> ${shippingAddress}</p>
             <p><strong>Items:</strong> ${items.length}</p>
           </div>
-          
-          <p>We will notify you once your order is shipped. Thank you for shopping with us!</p>
-          <p style="color: #999; font-size: 12px;">© 2026 Kotla Marketplace</p>
-        </div>
-        `
+          <p>We will notify you soon. Thank you!</p>
+        </div>`
       );
-    } else {
-      console.log("❌ NO BUYER EMAIL PROVIDED");
     }
 
-    // ========== SEND TO SELLERS ==========
+    if (buyerPhone) {
+      console.log("💬 WhatsApp to BUYER:", buyerPhone);
+      sendWhatsApp(buyerPhone, buyerName, {
+        orderId: order._id,
+        total: totalAmount,
+        itemCount: items.length,
+        address: shippingAddress,
+        paymentMethod: paymentMethod,
+      });
+    }
+
     const sellerIds = [
       ...new Set(items.map((i) => i.sellerId).filter(Boolean)),
     ];
-    console.log("🏪 Seller IDs:", sellerIds);
 
     const validSellerIds = sellerIds.filter((id) =>
       mongoose.Types.ObjectId.isValid(id)
@@ -281,69 +410,51 @@ app.post("/api/orders", async (req, res) => {
           0
         );
 
-        console.log("📧 Sending email to SELLER:", sellerEmail);
+        console.log("📧 Email to SELLER:", sellerEmail);
         sendEmail(
           sellerEmail,
           "📦 New Order Received - Kotla Marketplace",
-          `
-          <div style="font-family: Arial; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
-            <h2 style="color: #333;">New Order from ${buyerName}! 🎉</h2>
-            
+          `<div style="font-family: Arial; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
+            <h2>New Order from ${buyerName}! 🎉</h2>
             <div style="background: white; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <h3 style="color: #d32f2f;">Order Details</h3>
               <p><strong>Buyer:</strong> ${buyerName}</p>
               <p><strong>Email:</strong> ${buyerEmail}</p>
-              <p><strong>Phone:</strong> Check order details</p>
-              <p><strong>Items Ordered:</strong> ${sellerItems.length}</p>
-              <p><strong>Your Total Earnings:</strong> ₨${sellerTotal}</p>
-              <p><strong>Delivery Address:</strong> ${shippingAddress}</p>
+              <p><strong>Phone:</strong> ${buyerPhone || "N/A"}</p>
+              <p><strong>Items:</strong> ${sellerItems.length}</p>
+              <p><strong>Your Earnings:</strong> ₨${sellerTotal}</p>
+              <p><strong>Address:</strong> ${shippingAddress}</p>
             </div>
-            
-            <p>Please prepare the items for shipment. Thank you!</p>
-            <p style="color: #999; font-size: 12px;">© 2026 Kotla Marketplace</p>
-          </div>
-          `
+            <p>Please prepare items for shipment!</p>
+          </div>`
         );
-      } else {
-        console.log("❌ NO EMAIL FOUND FOR SELLER:", sellerId);
       }
     }
 
-    // ========== SEND TO ADMIN ==========
     const adminEmail = process.env.ADMIN_EMAIL;
-    console.log("🔐 Admin Email:", adminEmail);
-
     if (adminEmail) {
-      console.log("📧 Sending email to ADMIN:", adminEmail);
+      console.log("📧 Email to ADMIN:", adminEmail);
       sendEmail(
         adminEmail,
-        `🚨 New Order #${order._id} - Admin Alert`,
-        `
-        <div style="font-family: Arial; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
-          <h2 style="color: #d32f2f;">⚠️ New Order Alert</h2>
-          
+        `🚨 New Order #${order._id}`,
+        `<div style="font-family: Arial; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
+          <h2 style="color: #d32f2f;">New Order Alert</h2>
           <div style="background: white; padding: 15px; border-radius: 5px; margin: 20px 0;">
             <p><strong>Order ID:</strong> #${order._id}</p>
             <p><strong>Buyer:</strong> ${buyerName}</p>
             <p><strong>Email:</strong> ${buyerEmail}</p>
-            <p><strong>Total Amount:</strong> ₨${totalAmount}</p>
+            <p><strong>Phone:</strong> ${buyerPhone || "N/A"}</p>
+            <p><strong>Total:</strong> ₨${totalAmount}</p>
             <p><strong>Items:</strong> ${items.length}</p>
-            <p><strong>Payment Method:</strong> ${paymentMethod}</p>
             <p><strong>Address:</strong> ${shippingAddress}</p>
           </div>
-          
-          <p>Please monitor this order.</p>
-          <p style="color: #999; font-size: 12px;">© 2026 Kotla Marketplace - Admin Panel</p>
-        </div>
-        `
+        </div>`
       );
-    } else {
-      console.log("❌ NO ADMIN EMAIL IN ENV VARIABLES");
     }
 
     res.json({
       success: true,
-      message: "Order placed successfully & notifications dispatched ✅",
+      message: "Order placed & notifications sent ✅",
       order,
     });
   } catch (error) {
@@ -384,12 +495,11 @@ app.get("/api/seller/stats/:sellerId", async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`
-╔══════════════════════════════════════╗
-║   🚀 KOTLA MARKETPLACE BACKEND      ║
-║   Server running on port ${PORT}      ║
-║   Mailgun Email: ✅ CONFIGURED      ║
-║   mg.kotlamarketplace.com           ║
-║   http://localhost:${PORT}             ║
-╚══════════════════════════════════════╝
+╔════════════════════════════════════╗
+║  🚀 KOTLA MARKETPLACE BACKEND      ║
+║  Port: ${PORT}                          ║
+║  Mailgun: ✅ Configured             ║
+║  Twilio: ✅ Configured              ║
+╚════════════════════════════════════╝
   `);
 });
