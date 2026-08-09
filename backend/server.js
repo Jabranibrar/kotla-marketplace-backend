@@ -211,15 +211,8 @@ app.post("/api/products", async (req, res) => {
 app.put("/api/products/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const {
-      name,
-      originalPrice,
-      currentPrice,
-      stock,
-      category,
-      image,
-      sellerId,
-    } = req.body;
+    const { name, originalPrice, currentPrice, stock, category, image } =
+      req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Invalid product ID" });
@@ -228,10 +221,6 @@ app.put("/api/products/:id", async (req, res) => {
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
-    }
-
-    if (String(product.sellerId) !== String(sellerId)) {
-      return res.status(403).json({ error: "Unauthorized" });
     }
 
     const discount = originalPrice
@@ -265,7 +254,6 @@ app.put("/api/products/:id", async (req, res) => {
 app.delete("/api/products/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { sellerId } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Invalid product ID" });
@@ -274,10 +262,6 @@ app.delete("/api/products/:id", async (req, res) => {
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
-    }
-
-    if (String(product.sellerId) !== String(sellerId)) {
-      return res.status(403).json({ error: "Unauthorized" });
     }
 
     await Product.findByIdAndDelete(id);
