@@ -16,7 +16,6 @@ export function CartProvider({ children }) {
 
   useEffect(() => {
     try {
-      // ✨ Safe storage serialization to prevent QuotaExceededError
       const safeItems = cartItems.map((item) => ({
         _id: item._id || item.id,
         name: item.name,
@@ -24,7 +23,6 @@ export function CartProvider({ children }) {
         originalPrice: item.originalPrice,
         quantity: item.quantity,
         sellerId: item.sellerId,
-        // Agar image bohot bari (Base64) hai toh localStorage quota bachane ke liye safe fallback ya choti link rakhein
         image:
           item.image && item.image.startsWith("data:image")
             ? "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop&q=60"
@@ -32,10 +30,7 @@ export function CartProvider({ children }) {
       }));
       localStorage.setItem("kotla_cart_items", JSON.stringify(safeItems));
     } catch (error) {
-      console.warn(
-        "Storage quota exceeded, clearing heavy elements from cart cache."
-      );
-      // Fallback: Save without images if quota fails
+      console.warn("Storage quota exceeded");
       const minimalItems = cartItems.map((item) => ({
         _id: item._id || item.id,
         name: item.name,
@@ -69,6 +64,18 @@ export function CartProvider({ children }) {
     );
   };
 
+  const updateQuantity = (id, quantity) => {
+    if (quantity <= 0) {
+      removeFromCart(id);
+      return;
+    }
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        (item._id || item.id) === id ? { ...item, quantity } : item
+      )
+    );
+  };
+
   const clearCart = () => {
     setCartItems([]);
     localStorage.removeItem("kotla_cart_items");
@@ -85,6 +92,7 @@ export function CartProvider({ children }) {
         cartItems,
         addToCart,
         removeFromCart,
+        updateQuantity,
         clearCart,
         totalPrice,
         isCartOpen,

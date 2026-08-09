@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { addProduct, updateProduct } from "../api";
 import "../styles/addProduct.css";
 
@@ -18,302 +18,403 @@ const CATEGORY_DESCRIPTIONS = {
     "Top-tier premium beauty and personal care product designed for safe, flawless results.",
 };
 
+const EMPTY_FORM = {
+  name: "",
+  originalPrice: "",
+  currentPrice: "",
+  stock: "",
+  category: "cloths",
+  image: "",
+  description: "",
+};
+
 export default function AddProduct({
   user,
   onShowToast,
   onSuccess,
   editProductData,
 }) {
-  const [form, setForm] = useState({
-    name: "",
-    originalPrice: "",
-    currentPrice: "",
-    stock: "",
-    category: "cloths",
-    image: "",
-    description: "",
-  });
+  const [form, setForm] = useState(EMPTY_FORM);
   const [loading, setLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     if (editProductData) {
       setForm({
-        name: editProductData.name || "",
-        originalPrice: editProductData.originalPrice || "",
-        currentPrice: editProductData.currentPrice || "",
-        stock: editProductData.stock || "",
-        category: editProductData.category || "cloths",
-        image: editProductData.image || "",
-        description: editProductData.description || "",
+        name: editProductData.name ?? "",
+        originalPrice: editProductData.originalPrice ?? "",
+        currentPrice: editProductData.currentPrice ?? "",
+        stock: editProductData.stock ?? "",
+        category: editProductData.category ?? "cloths",
+        image: editProductData.image ?? "",
+        description: editProductData.description ?? "",
       });
+
+      return;
     }
+
+    setForm(EMPTY_FORM);
   }, [editProductData]);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setForm((previousForm) => ({
+      ...previousForm,
+      [name]: value,
+    }));
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setForm((prev) => ({ ...prev, image: reader.result }));
-      };
-      reader.readAsDataURL(file);
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      onShowToast?.("Please select a valid image file.", "error");
+      return;
     }
+
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setForm((previousForm) => ({
+        ...previousForm,
+        image: reader.result,
+      }));
+    };
+
+    reader.readAsDataURL(file);
   };
 
   const handleRemoveImage = (e) => {
     e.preventDefault();
-    setForm((prev) => ({ ...prev, image: "" }));
+
+    setForm((previousForm) => ({
+      ...previousForm,
+      image: "",
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (loading) return;
-    if (!user?._id && !user?.id) {
-      if (onShowToast) onShowToast("Please login as a seller first", "error");
+
+    const sellerId = user?._id || user?.id;
+
+    if (!sellerId) {
+      onShowToast?.("Please login as a seller first.", "error");
       return;
     }
 
+    const name = form.name.trim();
+    const originalPrice = Number(form.originalPrice);
+    const currentPrice = Number(form.currentPrice);
+    const stock = Number(form.stock);
+
+    if (!name) {
+      onShowToast?.("Please enter a product name.", "warning");
+      return;
+    }
+
+    if (!Number.isFinite(originalPrice) || originalPrice <= 0) {
+      onShowToast?.("Please enter a valid original price.", "warning");
+      return;
+    }
+
+    if (!Number.isFinite(currentPrice) || currentPrice <= 0) {
+      onShowToast?.("Please enter a valid sale price.", "warning");
+      return;
+    }
+
+    if (currentPrice > originalPrice) {
+      onShowToast?.(
+        "Sale price cannot be higher than the original price.",
+        "warning"
+      );
+      return;
+    }
+
+    if (!Number.isInteger(stock) || stock < 0) {
+      onShowToast?.("Please enter a valid stock quantity.", "warning");
+      return;
+    }
+
+    const finalImage =
+      form.image && form.image.trim() !== ""
+        ? form.image
+        : DEFAULT_PRODUCT_IMAGE;
+
+    const finalDescription =
+      form.description && form.description.trim() !== ""
+        ? form.description.trim()
+        : CATEGORY_DESCRIPTIONS[form.category] ||
+          "High quality product available at Kotla Marketplace.";
+
+    const payload = {
+      sellerId,
+      name,
+      originalPrice,
+      currentPrice,
+      stock,
+      category: form.category,
+      image: finalImage,
+      description: finalDescription,
+    };
+
     setLoading(true);
+
     try {
-      const sellerId = user._id || user.id;
-      const finalImage =
-        form.image && form.image.trim() !== ""
-          ? form.image
-          : DEFAULT_PRODUCT_IMAGE;
-
-      const finalDescription =
-        form.description && form.description.trim() !== ""
-          ? form.description
-          : CATEGORY_DESCRIPTIONS[form.category] ||
-            "High quality product available at Kotla Marketplace.";
-
-      const payload = {
-        ...form,
-        sellerId,
-        image: finalImage,
-        description: finalDescription,
-        originalPrice: parseFloat(form.originalPrice),
-        currentPrice: parseFloat(form.currentPrice),
-        stock: parseInt(form.stock),
-      };
-
       if (editProductData) {
         const productId = editProductData._id || editProductData.id;
+
+        if (!productId) {
+          throw new Error("Product ID is missing. Cannot update product.");
+        }
+
         await updateProduct(productId, payload);
-        if (onShowToast)
-          onShowToast("Product updated successfully!", "success");
+
+        onShowToast?.("Product updated successfully!", "success");
       } else {
         await addProduct(payload);
-        if (onShowToast)
-          onShowToast("Product published successfully!", "success");
+
+        onShowToast?.("Product published successfully!", "success");
       }
 
-      setForm({
-        name: "",
-        originalPrice: "",
-        currentPrice: "",
-        stock: "",
-        category: "cloths",
-        image: "",
-        description: "",
-      });
+      setForm(EMPTY_FORM);
 
-      if (onSuccess) onSuccess();
+      if (typeof onSuccess === "function") {
+        onSuccess();
+      }
     } catch (error) {
-      const errorMsg =
-        error.response?.data?.error || error.message || "Something went wrong";
-      if (onShowToast) onShowToast(`Error: ${errorMsg}`, "error");
+      console.error("Product save error:", error);
+
+      const errorMessage =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        error.message ||
+        "Something went wrong while saving the product.";
+
+      onShowToast?.(`Error: ${errorMessage}`, "error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="kotla-product-modal">
-      <h2 className="kotla-modal-header">
-        {editProductData ? (
-          <svg
-            width="20"
-            height="20"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>
-            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-          </svg>
-        ) : (
-          <svg
-            width="20"
-            height="20"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-        )}
-        {editProductData ? "Edit Product Details" : "Publish New Product"}
-      </h2>
-
-      <form onSubmit={handleSubmit}>
-        <div className="kotla-form-group">
-          <label>Product Name *</label>
-          <input
-            type="text"
-            name="name"
-            placeholder="e.g., Men's Unstitched Cotton Suit"
-            value={form.name}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        {/* Image Section */}
-        <div className="kotla-form-group">
-          <label>Product Image *</label>
-          <div className="kotla-image-upload-wrapper">
-            <div
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-              className={`kotla-preview-container ${
-                form.image ? "has-image" : ""
-              }`}
+    <div className="kotla-add-product-page">
+      <div className="kotla-add-card">
+        <div className="kotla-add-header">
+          <div className="kotla-add-header-icon">
+            <svg
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
             >
-              <img
-                src={form.image || DEFAULT_PRODUCT_IMAGE}
-                alt="Product Preview"
-              />
-
-              {form.image && isHovered && (
-                <div
-                  className="kotla-remove-overlay"
-                  onClick={handleRemoveImage}
-                >
-                  <span className="kotla-remove-btn-tag">Remove</span>
-                </div>
+              {editProductData ? (
+                <>
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+                </>
+              ) : (
+                <>
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </>
               )}
-            </div>
+            </svg>
+          </div>
 
-            <div className="kotla-image-info">
-              <p className="kotla-image-status-text">
-                {form.image
-                  ? "Custom image uploaded (Hover to remove)"
-                  : "Default professional boutique image applied:"}
-              </p>
-              <label className="kotla-file-upload-label">
-                <svg
-                  width="14"
-                  height="14"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
-                  <polyline points="17 8 12 3 7 8"></polyline>
-                  <line x1="12" y1="3" x2="12" y2="15"></line>
-                </svg>
-                Choose File
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  style={{ display: "none" }}
+          <div>
+            <h1>
+              {editProductData ? "Edit Product Details" : "Publish New Product"}
+            </h1>
+
+            <p>
+              {editProductData
+                ? `Updating: ${editProductData.name || "Product"}`
+                : `Posting as Seller: ${user?.name || "Authorized Seller"}`}
+            </p>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="kotla-form-group">
+            <label>Product Name *</label>
+
+            <input
+              type="text"
+              name="name"
+              placeholder="e.g., Men's Unstitched Cotton Suit"
+              value={form.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="kotla-form-group">
+            <label>Product Image *</label>
+
+            <div className="kotla-image-upload-wrapper">
+              <div
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                className={`kotla-preview-container ${
+                  form.image ? "has-image" : ""
+                }`}
+              >
+                <img
+                  src={form.image || DEFAULT_PRODUCT_IMAGE}
+                  alt="Product Preview"
                 />
-              </label>
-              <span className="kotla-file-hint">PNG, JPG or WEBP</span>
+
+                {form.image && isHovered && (
+                  <div
+                    className="kotla-remove-overlay"
+                    onClick={handleRemoveImage}
+                  >
+                    <span className="kotla-remove-btn-tag">Remove</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="kotla-image-info">
+                <p className="kotla-image-status-text">
+                  {form.image
+                    ? "Custom image uploaded (Hover to remove)"
+                    : "Default professional boutique image applied:"}
+                </p>
+
+                <label className="kotla-file-upload-label">
+                  <svg
+                    width="14"
+                    height="14"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                  Choose File
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    style={{ display: "none" }}
+                  />
+                </label>
+
+                <span className="kotla-file-hint">PNG, JPG or WEBP</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="kotla-form-row">
-          <div className="kotla-form-group" style={{ marginBottom: 0 }}>
-            <label>Original Price (₨) *</label>
+          <div className="kotla-form-row">
+            <div className="kotla-form-group">
+              <label>Original Price (₨) *</label>
+
+              <input
+                type="number"
+                name="originalPrice"
+                placeholder="3500"
+                value={form.originalPrice}
+                onChange={handleChange}
+                min="0"
+                step="0.01"
+                required
+              />
+            </div>
+
+            <div className="kotla-form-group">
+              <label>Sale Price (₨) *</label>
+
+              <input
+                type="number"
+                name="currentPrice"
+                placeholder="2500"
+                value={form.currentPrice}
+                onChange={handleChange}
+                min="0"
+                step="0.01"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="kotla-form-group">
+            <label>Stock Quantity *</label>
+
             <input
               type="number"
-              name="originalPrice"
-              placeholder="3500"
-              value={form.originalPrice}
+              name="stock"
+              placeholder="15"
+              value={form.stock}
               onChange={handleChange}
+              min="0"
+              step="1"
               required
             />
           </div>
 
-          <div className="kotla-form-group" style={{ marginBottom: 0 }}>
-            <label>Sale Price (₨) *</label>
-            <input
-              type="number"
-              name="currentPrice"
-              placeholder="2500"
-              value={form.currentPrice}
+          <div className="kotla-form-group">
+            <label>Category *</label>
+
+            <select
+              name="category"
+              value={form.category}
               onChange={handleChange}
-              required
+            >
+              <option value="cloths">Cloths & Fabrics (Shops)</option>
+              <option value="fashion">Fashion & Apparel</option>
+              <option value="electronics">Electronics & Gadgets</option>
+              <option value="tools">Hardware & Tools</option>
+              <option value="beauty">Beauty & Personal Care</option>
+            </select>
+          </div>
+
+          <div className="kotla-form-group">
+            <label>Custom Description (Optional)</label>
+
+            <textarea
+              name="description"
+              placeholder="Leave blank to use smart category default description..."
+              value={form.description}
+              onChange={handleChange}
+              rows="3"
             />
           </div>
-        </div>
 
-        <div className="kotla-form-group">
-          <label>Stock Quantity *</label>
-          <input
-            type="number"
-            name="stock"
-            placeholder="15"
-            value={form.stock}
-            onChange={handleChange}
-            required
-          />
-        </div>
+          <div className="kotla-modal-actions">
+            <button
+              type="submit"
+              disabled={loading}
+              className="kotla-submit-btn"
+            >
+              {loading
+                ? "Processing..."
+                : editProductData
+                ? "Update Product"
+                : "Publish Product"}
+            </button>
 
-        {/* Category Dropdown */}
-        <div className="kotla-form-group">
-          <label>Category *</label>
-          <select name="category" value={form.category} onChange={handleChange}>
-            <option value="cloths">Cloths & Fabrics (Shops)</option>
-            <option value="fashion">Fashion & Apparel</option>
-            <option value="electronics">Electronics & Gadgets</option>
-            <option value="tools">Hardware & Tools</option>
-            <option value="beauty">Beauty & Personal Care</option>
-          </select>
-        </div>
-
-        {/* Custom Description Input Field */}
-        <div className="kotla-form-group">
-          <label>Custom Description (Optional)</label>
-          <textarea
-            name="description"
-            placeholder="Leave blank to use smart category default description..."
-            value={form.description}
-            onChange={handleChange}
-            rows="3"
-          />
-        </div>
-
-        <div className="kotla-modal-actions">
-          <button type="submit" disabled={loading} className="kotla-submit-btn">
-            {loading
-              ? "Processing..."
-              : editProductData
-              ? "Update Product"
-              : "Publish Product"}
-          </button>
-          <button
-            type="button"
-            onClick={onSuccess}
-            className="kotla-cancel-btn"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
+            <button
+              type="button"
+              onClick={onSuccess}
+              className="kotla-cancel-btn"
+              disabled={loading}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

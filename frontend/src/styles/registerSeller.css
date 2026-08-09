@@ -1,0 +1,221 @@
+.register-seller-page {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px 60px;
+  background: #f8fafc;
+}
+
+.register-seller-container {
+  width: min(520px, 100%);
+}
+
+.register-seller-card {
+  padding: 34px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.06);
+}
+
+.register-seller-header {
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.register-seller-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 14px;
+  border: 1px solid #bbf7d0;
+  border-radius: 14px;
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.register-seller-icon span {
+  font-size: 27px;
+  font-weight: 400;
+}
+
+.register-seller-eyebrow {
+  display: block;
+  margin-bottom: 7px;
+  color: #16a34a;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.register-seller-header h1 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 27px;
+  font-weight: 750;
+  line-height: 1.25;
+}
+
+.register-seller-header p {
+  max-width: 390px;
+  margin: 9px auto 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.register-seller-form {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+
+.register-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.register-form-group label {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 7px;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.register-form-group label span {
+  color: #dc2626;
+}
+
+.register-form-group input {
+  width: 100%;
+  min-height: 45px;
+  box-sizing: border-box;
+  padding: 0 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  background: #ffffff;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 13px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.register-form-group input::placeholder {
+  color: #94a3b8;
+}
+
+.register-form-group input:hover {
+  border-color: #94a3b8;
+}
+
+.register-form-group input:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+}
+
+.register-seller-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 47px;
+  margin-top: 4px;
+  border: 0;
+  border-radius: 8px;
+  background: #16a34a;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 750;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.18);
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.register-seller-submit:hover:not(:disabled) {
+  background: #15803d;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(22, 163, 74, 0.22);
+}
+
+.register-seller-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.register-seller-submit:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.register-seller-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: register-seller-spin 0.75s linear infinite;
+}
+
+@keyframes register-seller-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.register-seller-note {
+  margin: 22px 0 0;
+  padding-top: 17px;
+  border-top: 1px solid #f1f5f9;
+  color: #94a3b8;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .register-seller-page {
+    align-items: flex-start;
+    padding: 24px 14px 40px;
+  }
+
+  .register-seller-card {
+    padding: 25px 18px;
+    border-radius: 14px;
+  }
+
+  .register-seller-header h1 {
+    font-size: 23px;
+  }
+}
+
+@media (max-width: 360px) {
+  .register-seller-page {
+    padding: 14px 8px 30px;
+  }
+
+  .register-seller-card {
+    padding: 22px 14px;
+  }
+
+  .register-seller-header {
+    margin-bottom: 23px;
+  }
+
+  .register-seller-header h1 {
+    font-size: 21px;
+  }
+
+  .register-form-group input {
+    min-height: 43px;
+    padding: 0 11px;
+  }
+}

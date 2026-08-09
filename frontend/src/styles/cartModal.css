@@ -1,322 +1,608 @@
-/* --- Professional Cart Modal & Drawer Styles --- */
 .kotla-cart-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(2px);
+  inset: 0;
+  z-index: 1200;
   display: flex;
   justify-content: flex-end;
-  z-index: 3000;
-  animation: kotlaFadeIn 0.2s ease-in-out;
+  background: rgba(15, 23, 42, 0.38);
+  backdrop-filter: blur(2px);
+  animation: kotlaCartOverlayIn 0.2s ease;
 }
 
 .kotla-cart-drawer {
-  background-color: #ffffff;
-  width: 100%;
-  max-width: 440px;
+  width: min(430px, 100%);
   height: 100%;
   display: flex;
   flex-direction: column;
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
-  padding: 24px;
-  box-sizing: border-box;
-  animation: kotlaSlideIn 0.25s ease-out;
+  background: #ffffff;
+  box-shadow: -12px 0 40px rgba(15, 23, 42, 0.14);
+  animation: kotlaCartDrawerIn 0.25s ease;
+  overflow: hidden;
 }
 
 .kotla-cart-header {
+  min-height: 76px;
+  padding: 16px 20px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
+  gap: 16px;
   border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 16px;
+  background: #ffffff;
+  flex-shrink: 0;
 }
 
-.kotla-cart-title-wrapper {
+.kotla-cart-heading {
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: #1e293b;
+  gap: 12px;
+  min-width: 0;
 }
 
-.kotla-cart-title-wrapper svg {
-  color: #2563eb;
-}
-
-.kotla-cart-title-wrapper h2 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.kotla-cart-close-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #64748b;
-  padding: 6px;
-  border-radius: 6px;
+.kotla-cart-heading-icon {
+  width: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.kotla-cart-heading-icon svg {
+  width: 21px;
+  height: 21px;
+}
+
+.kotla-cart-header h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 17px;
+  line-height: 1.3;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.kotla-cart-header p {
+  margin: 3px 0 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.kotla-cart-close-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #64748b;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease,
+    color 0.18s ease, transform 0.18s ease;
+}
+
+.kotla-cart-close-btn svg {
+  width: 18px;
+  height: 18px;
 }
 
 .kotla-cart-close-btn:hover {
-  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  background: #f8fafc;
   color: #0f172a;
+  transform: rotate(3deg);
 }
 
-/* Cart Body Items */
 .kotla-cart-body {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  padding: 16px 0;
+  background: #f8fafc;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
 }
 
-.kotla-empty-cart {
-  text-align: center;
-  margin-top: 100px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
+.kotla-cart-body::-webkit-scrollbar {
+  width: 6px;
 }
 
-.kotla-empty-cart svg {
-  color: #cbd5e1;
+.kotla-cart-body::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.kotla-empty-cart p {
-  font-size: 15px;
-  font-weight: 600;
-  color: #475569;
-  margin: 0;
+.kotla-cart-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 20px;
 }
 
-.kotla-continue-shopping-btn {
-  padding: 10px 20px;
-  background-color: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  margin-top: 6px;
-  transition: background-color 0.2s ease;
-}
-
-.kotla-continue-shopping-btn:hover {
-  background-color: #1d4ed8;
+.kotla-cart-items-list {
+  padding: 14px;
 }
 
 .kotla-cart-item {
   display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #f1f5f9;
+  gap: 13px;
+  padding: 13px;
+  margin-bottom: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+.kotla-cart-item:last-child {
+  margin-bottom: 0;
+}
+
+.kotla-cart-item:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 5px 18px rgba(15, 23, 42, 0.06);
+  transform: translateY(-1px);
+}
+
+.kotla-cart-item-image-wrapper {
+  width: 82px;
+  height: 82px;
+  flex: 0 0 82px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  background: #f8fafc;
 }
 
 .kotla-cart-item-img {
-  width: 64px;
-  height: 64px;
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  background-color: #f8fafc;
-  flex-shrink: 0;
 }
 
 .kotla-cart-item-details {
+  min-width: 0;
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .kotla-cart-item-name {
-  margin: 0 0 4px 0;
-  fontsize: 14px;
-  fontweight: 600;
+  margin: 1px 0 7px;
   color: #1e293b;
+  font-size: 13px;
+  line-height: 1.45;
+  font-weight: 650;
   display: -webkit-box;
-  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
 }
 
-.kotla-cart-item-price {
-  margin: 0 0 8px 0;
-  font-size: 13px;
-  color: #2563eb;
+.kotla-cart-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.kotla-cart-item-quantity {
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: #f1f5f9;
+  color: #475569;
   font-weight: 600;
+}
+
+.kotla-cart-item-unit-price {
+  color: #64748b;
+}
+
+.kotla-cart-item-bottom {
+  margin-top: auto;
+  padding-top: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.kotla-cart-item-total {
+  color: #0f172a;
+  font-size: 14px;
+  line-height: 1.3;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .kotla-cart-remove-btn {
-  background-color: #fef2f2;
-  color: #dc2626;
-  border: 1px solid #fee2e2;
-  padding: 4px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 11px;
-  font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  transition: background-color 0.15s ease;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  transition: color 0.18s ease, opacity 0.18s ease;
+}
+
+.kotla-cart-remove-btn svg {
+  width: 14px;
+  height: 14px;
 }
 
 .kotla-cart-remove-btn:hover {
-  background-color: #fee2e2;
+  color: #dc2626;
 }
 
-/* Cart Footer / Checkout */
+.kotla-empty-cart {
+  min-height: 100%;
+  padding: 50px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.kotla-empty-cart-icon {
+  width: 76px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  border: 1px solid #dbeafe;
+  border-radius: 50%;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.kotla-empty-cart-icon svg {
+  width: 35px;
+  height: 35px;
+}
+
+.kotla-empty-cart h3 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 17px;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+.kotla-empty-cart p {
+  max-width: 280px;
+  margin: 7px 0 20px;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.kotla-continue-shopping-btn {
+  min-height: 40px;
+  padding: 0 17px;
+  border: 1px solid #2563eb;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+  transition: background-color 0.18s ease, border-color 0.18s ease,
+    transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.kotla-continue-shopping-btn:hover {
+  border-color: #1d4ed8;
+  background: #1d4ed8;
+  box-shadow: 0 5px 14px rgba(37, 99, 235, 0.2);
+  transform: translateY(-1px);
+}
+
 .kotla-cart-footer {
+  padding: 16px 18px 14px;
   border-top: 1px solid #e2e8f0;
-  padding-top: 16px;
+  background: #ffffff;
+  flex-shrink: 0;
+}
+
+.kotla-cart-summary {
+  margin-bottom: 13px;
+}
+
+.kotla-cart-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.kotla-cart-summary-row span:last-child {
+  color: #334155;
+  font-weight: 600;
 }
 
 .kotla-cart-total-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 16px;
-  font-size: 16px;
-  font-weight: 700;
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
   color: #1e293b;
+  font-size: 14px;
+  font-weight: 650;
 }
 
-.kotla-cart-total-row span:last-child {
-  color: #2563eb;
+.kotla-cart-total-row strong {
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 750;
 }
 
 .kotla-checkout-btn {
   width: 100%;
-  padding: 13px;
-  background-color: #16a34a;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 700;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 18px;
+  border: 1px solid #2563eb;
+  border-radius: 9px;
+  background: #2563eb;
+  color: #ffffff;
   cursor: pointer;
-  font-size: 15px;
-  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);
-  transition: background-color 0.2s ease;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background-color 0.18s ease, border-color 0.18s ease,
+    box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.kotla-checkout-btn svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 0.18s ease;
 }
 
 .kotla-checkout-btn:hover {
-  background-color: #15803d;
+  border-color: #1d4ed8;
+  background: #1d4ed8;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.22);
+  transform: translateY(-1px);
 }
 
-/* Delete Confirmation Modal */
+.kotla-checkout-btn:hover svg {
+  transform: translateX(2px);
+}
+
+.kotla-cart-secure-note {
+  margin: 9px 0 0;
+  color: #94a3b8;
+  font-size: 10px;
+  line-height: 1.4;
+  text-align: center;
+}
+
 .kotla-confirm-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(2px);
+  inset: 0;
+  z-index: 1300;
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 4000;
-  animation: kotlaFadeIn 0.2s ease-in-out;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(3px);
+  animation: kotlaConfirmOverlayIn 0.18s ease;
 }
 
 .kotla-confirm-card {
-  background-color: #ffffff;
-  padding: 28px 32px;
-  border-radius: 12px;
-  max-width: 380px;
-  width: 90%;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  width: min(390px, 100%);
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
   text-align: center;
+  animation: kotlaConfirmCardIn 0.2s ease;
 }
 
 .kotla-confirm-icon {
   width: 48px;
   height: 48px;
-  border-radius: 50%;
-  background-color: #fef2f2;
-  color: #dc2626;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 14px auto;
+  margin: 0 auto 14px;
+  border: 1px solid #fecaca;
+  border-radius: 50%;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.kotla-confirm-icon svg {
+  width: 24px;
+  height: 24px;
 }
 
 .kotla-confirm-card h3 {
-  font-size: 18px;
-  color: #1e293b;
-  margin: 0 0 8px 0;
+  margin: 0;
+  color: #0f172a;
+  font-size: 17px;
+  line-height: 1.4;
   font-weight: 700;
 }
 
 .kotla-confirm-card p {
-  font-size: 14px;
+  margin: 8px auto 20px;
+  max-width: 320px;
   color: #64748b;
-  margin: 0 0 20px 0;
-  line-height: 1.5;
+  font-size: 13px;
+  line-height: 1.6;
 }
 
-.kotla-confirm-card b {
-  color: #0f172a;
+.kotla-confirm-card p strong {
+  color: #334155;
+  font-weight: 650;
 }
 
 .kotla-confirm-actions {
   display: flex;
-  gap: 10px;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+.kotla-confirm-cancel-btn,
+.kotla-confirm-delete-btn {
+  min-height: 39px;
+  padding: 0 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+  transition: background-color 0.18s ease, border-color 0.18s ease,
+    color 0.18s ease;
 }
 
 .kotla-confirm-cancel-btn {
-  flex: 1;
-  padding: 11px;
-  background-color: #f1f5f9;
-  color: #334155;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
 }
 
 .kotla-confirm-cancel-btn:hover {
-  background-color: #e2e8f0;
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #1e293b;
 }
 
 .kotla-confirm-delete-btn {
-  flex: 1;
-  padding: 11px;
-  background-color: #dc2626;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
+  border: 1px solid #dc2626;
+  background: #dc2626;
+  color: #ffffff;
 }
 
 .kotla-confirm-delete-btn:hover {
-  background-color: #b91c1c;
+  border-color: #b91c1c;
+  background: #b91c1c;
 }
 
-@keyframes kotlaFadeIn {
+@keyframes kotlaCartOverlayIn {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
 }
 
-@keyframes kotlaSlideIn {
+@keyframes kotlaCartDrawerIn {
   from {
     transform: translateX(100%);
   }
+
   to {
     transform: translateX(0);
+  }
+}
+
+@keyframes kotlaConfirmOverlayIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes kotlaConfirmCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 600px) {
+  .kotla-cart-drawer {
+    width: 100%;
+  }
+
+  .kotla-cart-header {
+    min-height: 70px;
+    padding: 14px 16px;
+  }
+
+  .kotla-cart-heading-icon {
+    width: 39px;
+    height: 39px;
+  }
+
+  .kotla-cart-items-list {
+    padding: 11px;
+  }
+
+  .kotla-cart-item {
+    padding: 11px;
+    gap: 11px;
+  }
+
+  .kotla-cart-item-image-wrapper {
+    width: 72px;
+    height: 72px;
+    flex-basis: 72px;
+  }
+
+  .kotla-cart-footer {
+    padding: 14px 15px 12px;
+  }
+
+  .kotla-confirm-card {
+    padding: 21px;
+  }
+}
+
+@media (max-width: 380px) {
+  .kotla-cart-item-image-wrapper {
+    width: 64px;
+    height: 64px;
+    flex-basis: 64px;
+  }
+
+  .kotla-cart-item-name {
+    font-size: 12px;
+  }
+
+  .kotla-cart-item-total {
+    font-size: 13px;
+  }
+
+  .kotla-confirm-actions {
+    flex-direction: column-reverse;
+  }
+
+  .kotla-confirm-cancel-btn,
+  .kotla-confirm-delete-btn {
+    width: 100%;
   }
 }

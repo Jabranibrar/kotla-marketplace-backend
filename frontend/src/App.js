@@ -1,39 +1,57 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useNavigate,
+} from "react-router-dom";
 import { useCart } from "./context/CartContext";
+
 import CartModal from "./components/CartModal";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import Home from "./components/Home";
 import LoginModal from "./components/LoginModal";
-import AddProductPage from "./components/AddProductPage";
-import SellerDashboard from "./components/SellerDashboard";
-import CheckoutPage from "./components/CheckoutPage";
-import RegisterSeller from "./components/RegisterSeller";
 import Toast from "./components/Toast";
+import KotlaAI from "./components/KotlaAI";
 
-function App() {
-  const { cartItems, totalPrice, setIsCartOpen } = useCart();
+import Home from "./pages/Home";
+import CheckoutPage from "./pages/CheckoutPage";
+import AddProductPage from "./pages/AddProductPage";
+import SellerDashboard from "./pages/SellerDashboard";
+import RegisterSeller from "./pages/RegisterSeller";
+
+function AppContent() {
+  const { cartItems, totalPrice, setIsCartOpen, clearCart } = useCart();
+  const navigate = useNavigate();
+
   const [loginOpen, setLoginOpen] = useState(false);
 
-  // Persistent Login state using localStorage
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     return localStorage.getItem("kotla_is_logged_in") === "true";
   });
+
   const [userType, setUserType] = useState(() => {
     return localStorage.getItem("kotla_user_type") || null;
   });
+
   const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem("kotla_user_data");
-    return savedUser ? JSON.parse(savedUser) : null;
+
+    try {
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch {
+      return null;
+    }
   });
 
-  const [currentPage, setCurrentPage] = useState("home");
   const [searchQuery, setSearchQuery] = useState("");
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
     localStorage.setItem("kotla_is_logged_in", isLoggedIn);
     localStorage.setItem("kotla_user_type", userType || "");
+
     if (user) {
       localStorage.setItem("kotla_user_data", JSON.stringify(user));
     } else {
@@ -42,7 +60,10 @@ function App() {
   }, [isLoggedIn, userType, user]);
 
   const showToast = (message, type = "info") => {
-    setToast({ message, type });
+    setToast({
+      message,
+      type,
+    });
   };
 
   const handleLogin = (userData) => {
@@ -50,7 +71,9 @@ function App() {
     setUserType(userData.type || "buyer");
     setUser(userData);
     setLoginOpen(false);
-    setCurrentPage("home");
+
+    navigate("/");
+
     showToast(`Welcome back, ${userData.name || "User"}!`, "success");
   };
 
@@ -58,113 +81,152 @@ function App() {
     setIsLoggedIn(false);
     setUserType(null);
     setUser(null);
-    setCurrentPage("home");
+    clearCart();
     localStorage.removeItem("kotla_is_logged_in");
     localStorage.removeItem("kotla_user_type");
     localStorage.removeItem("kotla_user_data");
+
+    navigate("/");
+
     showToast("Logged out successfully", "info");
   };
 
   const handleSellClick = () => {
     if (!isLoggedIn) {
-      setCurrentPage("register-seller");
-    } else if (userType === "seller") {
-      setCurrentPage("seller-dashboard");
-    } else {
-      setCurrentPage("register-seller");
+      navigate("/register-seller");
+      return;
     }
+
+    if (userType === "seller") {
+      navigate("/seller-dashboard");
+      return;
+    }
+
+    navigate("/register-seller");
   };
 
   const handleNavigate = (page) => {
-    if (page === "home") setCurrentPage("home");
-    else if (page === "orders") {
+    if (page === "home") {
+      navigate("/");
+      return;
+    }
+
+    if (page === "orders") {
       showToast("Orders feature is coming soon!", "info");
-    } else if (page === "addresses") {
+      return;
+    }
+
+    if (page === "addresses") {
       showToast("Saved addresses section", "info");
-    } else if (page === "seller-dashboard") {
-      setCurrentPage("seller-dashboard");
+      return;
+    }
+
+    if (page === "seller-dashboard") {
+      if (isLoggedIn && userType === "seller") {
+        navigate("/seller-dashboard");
+      } else {
+        navigate("/register-seller");
+      }
     }
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100vh",
-        backgroundColor: "#F5F5F5",
-      }}
-    >
-      <div>
-        <Header
-          onCartClick={() => setIsCartOpen(true)}
-          onLoginClick={() => setLoginOpen(true)}
-          isLoggedIn={isLoggedIn}
-          userType={userType}
-          onLogout={handleLogout}
-          onSellClick={handleSellClick}
-          onSearchChange={setSearchQuery}
-          searchQuery={searchQuery}
-          user={user}
-          onNavigate={handleNavigate}
-          totalItems={cartItems.reduce((acc, item) => acc + item.quantity, 0)}
-        />
-        <CartModal
-          onShowToast={showToast}
-          onCheckout={() => setCurrentPage("checkout")}
-        />
-      </div>
+    <div className="app-shell">
+      <Header
+        onCartClick={() => setIsCartOpen(true)}
+        onLoginClick={() => setLoginOpen(true)}
+        isLoggedIn={isLoggedIn}
+        userType={userType}
+        onLogout={handleLogout}
+        onSellClick={handleSellClick}
+        onSearchChange={setSearchQuery}
+        searchQuery={searchQuery}
+        user={user}
+        onNavigate={handleNavigate}
+        totalItems={cartItems.reduce((acc, item) => acc + item.quantity, 0)}
+        totalPrice={totalPrice}
+      />
 
-      <div style={{ flex: 1 }}>
-        {currentPage === "home" && (
-          <Home
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            onShowToast={showToast}
-            onDirectCheckout={() => setCurrentPage("checkout")}
-            user={user}
-            onOpenLoginModal={() => setLoginOpen(true)}
+      <CartModal
+        onShowToast={showToast}
+        onCheckout={() => navigate("/checkout")}
+      />
+
+      <main className="app-main">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Home
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                onShowToast={showToast}
+                onDirectCheckout={() => navigate("/checkout")}
+                user={user}
+                onOpenLoginModal={() => setLoginOpen(true)}
+              />
+            }
           />
-        )}
 
-        {currentPage === "checkout" && (
-          <CheckoutPage
-            cartItems={cartItems}
-            totalPrice={totalPrice}
-            user={user}
-            onBack={() => setCurrentPage("home")}
-            onShowToast={showToast}
+          <Route
+            path="/checkout"
+            element={
+              <CheckoutPage
+                cartItems={cartItems}
+                totalPrice={totalPrice}
+                user={user}
+                onBack={() => navigate("/")}
+                onShowToast={showToast}
+              />
+            }
           />
-        )}
 
-        {currentPage === "register-seller" && (
-          <RegisterSeller
-            onShowToast={showToast}
-            onLoginSuccess={(userData) => {
-              handleLogin(userData);
-              setCurrentPage("seller-dashboard");
-            }}
+          <Route
+            path="/register-seller"
+            element={
+              <RegisterSeller
+                onShowToast={showToast}
+                onLoginSuccess={(userData) => {
+                  handleLogin(userData);
+                  navigate("/seller-dashboard");
+                }}
+              />
+            }
           />
-        )}
 
-        {currentPage === "seller-dashboard" &&
-          isLoggedIn &&
-          userType === "seller" && (
-            <SellerDashboard user={user} onShowToast={showToast} />
-          )}
+          <Route
+            path="/seller-dashboard"
+            element={
+              isLoggedIn && userType === "seller" ? (
+                <SellerDashboard user={user} onShowToast={showToast} />
+              ) : (
+                <Navigate to="/register-seller" replace />
+              )
+            }
+          />
 
-        {currentPage === "add-product" &&
-          isLoggedIn &&
-          userType === "seller" && (
-            <AddProductPage
-              user={user}
-              onShowToast={showToast}
-              onBack={() => setCurrentPage("home")}
-            />
-          )}
-      </div>
+          <Route
+            path="/add-product"
+            element={
+              isLoggedIn && userType === "seller" ? (
+                <AddProductPage
+                  user={user}
+                  onShowToast={showToast}
+                  onBack={() => navigate("/seller-dashboard")}
+                />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
+          />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
 
       <Footer />
+
+      <KotlaAI user={user} />
 
       <LoginModal
         isOpen={loginOpen}
@@ -184,4 +246,10 @@ function App() {
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  );
+}

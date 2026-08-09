@@ -14,13 +14,29 @@ export default function CartModal({ onShowToast, onCheckout }) {
 
   if (!isCartOpen) return null;
 
+  const formatPrice = (price) => {
+    const numericPrice = Number(price) || 0;
+    return numericPrice.toLocaleString("en-PK", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+
+  const totalItems = cartItems.reduce(
+    (total, item) => total + (Number(item.quantity) || 0),
+    0
+  );
+
   const handleCheckoutClick = () => {
     if (cartItems.length === 0) {
-      if (onShowToast) onShowToast("Your cart is empty!", "warning");
+      if (onShowToast) {
+        onShowToast("Your cart is empty!", "warning");
+      }
       return;
     }
 
     setIsCartOpen(false);
+
     if (onCheckout) {
       onCheckout();
     }
@@ -33,10 +49,18 @@ export default function CartModal({ onShowToast, onCheckout }) {
 
   const executeDelete = () => {
     if (!itemToDelete) return;
+
     removeFromCart(itemToDelete._id);
+
     if (onShowToast) {
       onShowToast("Item removed from cart", "success");
     }
+
+    setDeleteModalOpen(false);
+    setItemToDelete(null);
+  };
+
+  const closeDeleteModal = () => {
     setDeleteModalOpen(false);
     setItemToDelete(null);
   };
@@ -44,59 +68,70 @@ export default function CartModal({ onShowToast, onCheckout }) {
   return (
     <div className="kotla-cart-overlay">
       <div className="kotla-cart-drawer">
-        {/* Header */}
         <div className="kotla-cart-header">
-          <div className="kotla-cart-title-wrapper">
-            <svg
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-            >
-              <circle cx="9" cy="21" r="1"></circle>
-              <circle cx="20" cy="21" r="1"></circle>
-              <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"></path>
-            </svg>
-            <h2>Shopping Cart</h2>
+          <div className="kotla-cart-heading">
+            <div className="kotla-cart-heading-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                aria-hidden="true"
+              >
+                <path d="M6 8h12l1 13H5L6 8Z" />
+                <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+              </svg>
+            </div>
+
+            <div>
+              <h2>Shopping Cart</h2>
+              <p>
+                {totalItems} {totalItems === 1 ? "item" : "items"} in your cart
+              </p>
+            </div>
           </div>
+
           <button
+            type="button"
             onClick={() => setIsCartOpen(false)}
             className="kotla-cart-close-btn"
+            aria-label="Close shopping cart"
           >
             <svg
-              width="18"
-              height="18"
+              viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2.5"
-              viewBox="0 0 24 24"
+              strokeWidth="1.8"
+              aria-hidden="true"
             >
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
+              <path d="M6 6l12 12" />
+              <path d="M18 6L6 18" />
             </svg>
           </button>
         </div>
 
-        {/* Cart Items List */}
         <div className="kotla-cart-body">
           {cartItems.length === 0 ? (
             <div className="kotla-empty-cart">
-              <svg
-                width="64"
-                height="64"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                viewBox="0 0 24 24"
-              >
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <path d="M16 10a4 4 0 0 1-8 0"></path>
-              </svg>
-              <p>Your cart is empty</p>
+              <div className="kotla-empty-cart-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  aria-hidden="true"
+                >
+                  <path d="M6 8h12l1 13H5L6 8Z" />
+                  <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+                </svg>
+              </div>
+
+              <h3>Your cart is empty</h3>
+
+              <p>Looks like you haven't added anything to your cart yet.</p>
+
               <button
+                type="button"
                 onClick={() => setIsCartOpen(false)}
                 className="kotla-continue-shopping-btn"
               >
@@ -104,98 +139,160 @@ export default function CartModal({ onShowToast, onCheckout }) {
               </button>
             </div>
           ) : (
-            cartItems.map((item) => (
-              <div key={item._id} className="kotla-cart-item">
-                <img
-                  src={
-                    item.image && item.image.trim() !== ""
-                      ? item.image
-                      : DEFAULT_PRODUCT_IMAGE
-                  }
-                  alt={item.name}
-                  className="kotla-cart-item-img"
-                />
-                <div className="kotla-cart-item-details">
-                  <h4 className="kotla-cart-item-name">{item.name}</h4>
-                  <p className="kotla-cart-item-price">
-                    ₨ {item.currentPrice} x {item.quantity}
-                  </p>
-                  <button
-                    onClick={() => confirmDeleteClick(item)}
-                    className="kotla-cart-remove-btn"
-                  >
-                    <svg
-                      width="12"
-                      height="12"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      viewBox="0 0 24 24"
-                    >
-                      <polyline points="3 6 5 6 21 6"></polyline>
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    </svg>
-                    Remove
-                  </button>
-                </div>
-              </div>
-            ))
+            <div className="kotla-cart-items-list">
+              {cartItems.map((item) => {
+                const itemPrice = Number(item.currentPrice) || 0;
+                const quantity = Number(item.quantity) || 0;
+                const itemTotal = itemPrice * quantity;
+
+                return (
+                  <div key={item._id} className="kotla-cart-item">
+                    <div className="kotla-cart-item-image-wrapper">
+                      <img
+                        src={
+                          item.image && item.image.trim() !== ""
+                            ? item.image
+                            : DEFAULT_PRODUCT_IMAGE
+                        }
+                        alt={item.name}
+                        className="kotla-cart-item-img"
+                      />
+                    </div>
+
+                    <div className="kotla-cart-item-details">
+                      <h4 className="kotla-cart-item-name">{item.name}</h4>
+
+                      <div className="kotla-cart-item-meta">
+                        <span className="kotla-cart-item-quantity">
+                          Qty {quantity}
+                        </span>
+
+                        <span className="kotla-cart-item-unit-price">
+                          ₨ {formatPrice(itemPrice)}
+                        </span>
+                      </div>
+
+                      <div className="kotla-cart-item-bottom">
+                        <strong className="kotla-cart-item-total">
+                          ₨ {formatPrice(itemTotal)}
+                        </strong>
+
+                        <button
+                          type="button"
+                          onClick={() => confirmDeleteClick(item)}
+                          className="kotla-cart-remove-btn"
+                          aria-label={`Remove ${item.name} from cart`}
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            aria-hidden="true"
+                          >
+                            <path d="M4 7h16" />
+                            <path d="M10 11v6" />
+                            <path d="M14 11v6" />
+                            <path d="M6 7l1 14h10l1-14" />
+                            <path d="M9 7V4h6v3" />
+                          </svg>
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
 
-        {/* Footer / Checkout */}
         {cartItems.length > 0 && (
           <div className="kotla-cart-footer">
-            <div className="kotla-cart-total-row">
-              <span>Total Amount:</span>
-              <span>₨ {totalPrice}</span>
+            <div className="kotla-cart-summary">
+              <div className="kotla-cart-summary-row">
+                <span>Subtotal</span>
+                <span>₨ {formatPrice(totalPrice)}</span>
+              </div>
+
+              <div className="kotla-cart-summary-row kotla-cart-total-row">
+                <span>Total</span>
+                <strong>₨ {formatPrice(totalPrice)}</strong>
+              </div>
             </div>
+
             <button
+              type="button"
               onClick={handleCheckoutClick}
               className="kotla-checkout-btn"
             >
-              Proceed to Checkout
+              <span>Proceed to Checkout</span>
+
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                aria-hidden="true"
+              >
+                <path d="M5 12h14" />
+                <path d="m13 6 6 6-6 6" />
+              </svg>
             </button>
+
+            <p className="kotla-cart-secure-note">
+              Secure checkout • Cash on Delivery available
+            </p>
           </div>
         )}
       </div>
 
-      {/* Delete Confirmation Popup */}
       {deleteModalOpen && (
-        <div className="kotla-confirm-overlay">
+        <div
+          className="kotla-confirm-overlay"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              closeDeleteModal();
+            }
+          }}
+        >
           <div className="kotla-confirm-card">
             <div className="kotla-confirm-icon">
               <svg
-                width="24"
-                height="24"
+                viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
+                strokeWidth="1.7"
+                aria-hidden="true"
               >
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                <line x1="12" y1="9" x2="12" y2="13"></line>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                <path d="M12 3.5 21 20H3L12 3.5Z" />
+                <path d="M12 9v5" />
+                <path d="M12 17.5h.01" />
               </svg>
             </div>
-            <h3>Remove Item</h3>
+
+            <h3>Remove item?</h3>
+
             <p>
-              Are you sure you want to remove <b>"{itemToDelete?.name}"</b> from
-              your cart?
+              Are you sure you want to remove{" "}
+              <strong>"{itemToDelete?.name}"</strong> from your cart?
             </p>
 
             <div className="kotla-confirm-actions">
               <button
-                onClick={() => setDeleteModalOpen(false)}
+                type="button"
+                onClick={closeDeleteModal}
                 className="kotla-confirm-cancel-btn"
               >
-                Cancel
+                Keep Item
               </button>
+
               <button
+                type="button"
                 onClick={executeDelete}
                 className="kotla-confirm-delete-btn"
               >
-                Yes, Remove
+                Remove Item
               </button>
             </div>
           </div>
