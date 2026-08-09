@@ -1,473 +1,1275 @@
-/* --- Modal Overlay & Container --- */
-.kotla-modal-overlay {
+#recaptcha-container {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.kotla-login-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(4px);
+  inset: 0;
+  z-index: 9999;
+
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 2000;
-  padding: 16px;
-  box-sizing: border-box;
+  justify-content: center;
+
+  padding: 24px;
+
+  background: radial-gradient(
+      circle at 15% 20%,
+      rgba(37, 99, 235, 0.12),
+      transparent 30%
+    ),
+    radial-gradient(circle at 85% 80%, rgba(15, 118, 110, 0.1), transparent 28%),
+    rgba(15, 23, 42, 0.72);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  animation: kotlaOverlayIn 0.2s ease-out;
 }
 
-.kotla-modal-content {
-  background-color: #ffffff;
-  padding: 32px;
-  border-radius: 16px;
-  width: 100%;
-  max-width: 440px;
+.kotla-login-modal {
   position: relative;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  max-height: 90vh;
-  overflow-y: auto;
-  box-sizing: border-box;
-  animation: modalScaleIn 0.25s ease-out;
+
+  width: min(100%, 1040px);
+  max-height: calc(100vh - 48px);
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 24px;
+
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.25),
+    0 10px 30px rgba(15, 23, 42, 0.12);
+
+  animation: kotlaModalIn 0.28s ease-out;
 }
 
-@keyframes modalScaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+.kotla-modal-layout {
+  display: grid;
+  grid-template-columns: 38% 62%;
+
+  min-height: 680px;
+}
+
+.kotla-login-brand {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  padding: 52px 42px;
+
+  overflow: hidden;
+
+  background: radial-gradient(
+      circle at 80% 10%,
+      rgba(96, 165, 250, 0.2),
+      transparent 28%
+    ),
+    linear-gradient(145deg, #0f172a 0%, #172554 52%, #1e3a8a 100%);
+
+  color: #ffffff;
+}
+
+.kotla-login-brand::before {
+  content: "";
+
+  position: absolute;
+  width: 280px;
+  height: 280px;
+
+  top: -100px;
+  right: -110px;
+
+  border-radius: 50%;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 35px rgba(255, 255, 255, 0.025),
+    0 0 0 70px rgba(255, 255, 255, 0.02);
+}
+
+.kotla-brand-content {
+  position: relative;
+  z-index: 2;
+}
+
+.kotla-brand-logo {
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 18px;
+
+  border-radius: 13px;
+
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  color: #ffffff;
+
+  font-size: 21px;
+  font-weight: 800;
+
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.kotla-brand-name {
+  display: block;
+
+  margin-bottom: 58px;
+
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: #bfdbfe;
+}
+
+.kotla-login-brand h2 {
+  max-width: 300px;
+
+  margin: 0 0 18px;
+
+  font-size: 34px;
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+}
+
+.kotla-login-brand h2 span {
+  display: block;
+  color: #60a5fa;
+}
+
+.kotla-login-brand p {
+  max-width: 315px;
+
+  margin: 0;
+
+  color: #cbd5e1;
+
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.kotla-brand-points {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  margin-top: 42px;
+}
+
+.kotla-brand-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.kotla-brand-point > span {
+  width: 24px;
+  height: 24px;
+
+  flex: 0 0 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: rgba(96, 165, 250, 0.16);
+  border: 1px solid rgba(147, 197, 253, 0.2);
+
+  color: #93c5fd;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.kotla-brand-point strong {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #f8fafc;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.kotla-brand-point small {
+  display: block;
+
+  color: #94a3b8;
+
+  font-size: 11px;
+}
+
+.kotla-brand-footer {
+  position: relative;
+  z-index: 2;
+
+  color: #64748b;
+
+  font-size: 11px;
+}
+
+.kotla-login-content {
+  position: relative;
+
+  padding: 48px 58px;
+
+  overflow-y: auto;
+
+  background: #ffffff;
+}
+
+.kotla-form-header {
+  margin-bottom: 26px;
+}
+
+.kotla-form-eyebrow {
+  display: inline-block;
+
+  margin-bottom: 10px;
+
+  color: #2563eb;
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.kotla-modal-title {
+  margin: 0 0 8px;
+
+  color: #0f172a;
+
+  font-size: 29px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.kotla-modal-subtitle {
+  max-width: 520px;
+
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 13px;
+  line-height: 1.65;
 }
 
 .kotla-modal-close {
   position: absolute;
   top: 18px;
   right: 18px;
-  background: #f1f5f9;
-  border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  color: #64748b;
+  z-index: 20;
+
+  width: 36px;
+  height: 36px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.92);
+
+  color: #64748b;
+
+  font-size: 22px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .kotla-modal-close:hover {
-  background: #e2e8f0;
   color: #0f172a;
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: rotate(4deg);
 }
 
-/* --- Header --- */
-.kotla-modal-title {
-  font-size: 22px;
-  margin: 0 0 6px 0;
-  color: #0f172a;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-}
-
-.kotla-modal-subtitle {
-  font-size: 13px;
-  color: #64748b;
-  margin: 0 0 20px 0;
-  line-height: 1.4;
-}
-
-/* --- Toggles & Tabs --- */
 .kotla-mode-toggle {
-  display: flex;
-  background-color: #f1f5f9;
-  padding: 4px;
-  border-radius: 10px;
-  margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+
+  margin-bottom: 18px;
 }
 
 .kotla-mode-btn {
-  flex: 1;
-  padding: 8px;
-  background: transparent;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 12px;
+  min-height: 62px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  padding: 10px 13px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 13px;
+
+  background: #f8fafc;
+
+  color: #475569;
+
+  text-align: left;
+
   cursor: pointer;
-  color: #64748b;
-  transition: all 0.2s ease;
+
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.kotla-mode-btn:hover {
+  transform: translateY(-1px);
+  border-color: #cbd5e1;
+}
+
+.kotla-mode-btn > span {
+  width: 34px;
+  height: 34px;
+
+  flex: 0 0 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  font-size: 16px;
+}
+
+.kotla-mode-btn strong {
+  display: block;
+
+  margin-bottom: 2px;
+
+  color: #334155;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.kotla-mode-btn small {
+  color: #94a3b8;
+  font-size: 10px;
 }
 
 .kotla-mode-btn.active-buyer {
-  background: #ffffff;
-  color: #0f172a;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background: #eff6ff;
+  border-color: #93c5fd;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);
+}
+
+.kotla-mode-btn.active-buyer strong {
+  color: #2563eb;
 }
 
 .kotla-mode-btn.active-seller {
-  background: #ffffff;
-  color: #2563eb;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background: #f0fdf4;
+  border-color: #86efac;
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.08);
+}
+
+.kotla-mode-btn.active-seller strong {
+  color: #15803d;
 }
 
 .kotla-method-tabs {
   display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: 5px;
+
+  padding: 4px;
+
+  margin-bottom: 22px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 11px;
+
+  background: #f8fafc;
 }
 
 .kotla-tab-btn {
   flex: 1;
-  padding: 9px;
+
+  min-height: 38px;
+
+  border: 0;
   border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
+
+  background: transparent;
+
+  color: #94a3b8;
+
+  font-size: 11px;
+  font-weight: 700;
+
   cursor: pointer;
-  transition: all 0.2s;
+
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kotla-tab-btn span {
+  margin-right: 6px;
+}
+
+.kotla-tab-btn.active {
+  background: #ffffff;
+  color: #1e293b;
+
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 1px rgba(15, 23, 42, 0.04);
 }
 
 .kotla-tab-btn.email.active {
-  background: #eff6ff;
-  border: 1px solid #2563eb;
   color: #2563eb;
 }
 
-.kotla-tab-btn.email.inactive {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  color: #64748b;
-}
-
 .kotla-tab-btn.whatsapp.active {
-  background: #f0fdf4;
-  border: 1px solid #16a34a;
-  color: #16a34a;
+  color: #15803d;
 }
 
-.kotla-tab-btn.whatsapp.inactive {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  color: #64748b;
+.kotla-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-/* --- Form Elements --- */
 .kotla-form-group {
-  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
 }
 
 .kotla-label {
-  display: block;
-  font-size: 12px;
-  font-weight: 600;
-  color: #475569;
-  margin-bottom: 6px;
+  color: #334155;
+
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .kotla-input {
   width: 100%;
-  padding: 11px 14px;
-  border-radius: 8px;
-  border: 1px solid #cbd5e1;
-  font-size: 14px;
-  outline: none;
+  min-height: 45px;
+
   box-sizing: border-box;
-  transition: border-color 0.2s, box-shadow 0.2s;
+
+  padding: 0 13px;
+
+  border: 1px solid #dbe3ec;
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #0f172a;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.kotla-input::placeholder {
+  color: #b1bac7;
+}
+
+.kotla-input:hover {
+  border-color: #cbd5e1;
 }
 
 .kotla-input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #60a5fa;
+
+  background: #ffffff;
+
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
 }
 
 .kotla-phone-wrapper {
   display: flex;
-  align-items: center;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
+
+  min-height: 45px;
+
   overflow: hidden;
-  background: #fff;
-  transition: border-color 0.2s, box-shadow 0.2s;
+
+  border: 1px solid #dbe3ec;
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .kotla-phone-wrapper:focus-within {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.kotla-phone-wrapper.whatsapp-wrapper {
-  border-color: #16a34a;
-}
-.kotla-phone-wrapper.whatsapp-wrapper:focus-within {
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
 }
 
 .kotla-phone-prefix {
-  background-color: #f1f5f9;
-  padding: 11px 12px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #334155;
-  border-right: 1px solid #cbd5e1;
-}
+  display: flex;
+  align-items: center;
 
-.kotla-phone-prefix.whatsapp-prefix {
-  background-color: #f0fdf4;
-  color: #16a34a;
-  border-right-color: #16a34a;
+  padding: 0 11px;
+
+  border-right: 1px solid #e2e8f0;
+
+  background: #f8fafc;
+
+  color: #475569;
+
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .kotla-phone-input {
   width: 100%;
-  padding: 11px 14px;
-  border: none;
-  font-size: 14px;
+
+  padding: 0 12px;
+
+  border: 0;
   outline: none;
-  box-sizing: border-box;
+
+  background: transparent;
+
+  color: #0f172a;
+
+  font-family: inherit;
+  font-size: 13px;
 }
 
-/* --- Buttons --- */
-.kotla-submit-btn {
-  width: 100%;
-  padding: 12px;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s, transform 0.1s;
-  margin-top: 4px;
+.kotla-phone-input::placeholder {
+  color: #b1bac7;
 }
 
-.kotla-submit-btn:active {
-  transform: scale(0.98);
-}
-
-.kotla-submit-btn.buyer {
-  background-color: #0f172a;
-}
-.kotla-submit-btn.buyer:hover {
-  background-color: #1e293b;
-}
-
-.kotla-submit-btn.seller {
-  background-color: #2563eb;
-}
-.kotla-submit-btn.seller:hover {
-  background-color: #1d4ed8;
-}
-
+.kotla-submit-btn,
 .kotla-whatsapp-submit-btn {
+  width: 100%;
+  min-height: 46px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 12px;
-  background-color: #25d366;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
+  gap: 9px;
+
+  margin-top: 2px;
+
+  border: 0;
+  border-radius: 9px;
+
+  color: #ffffff;
+
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+
   cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s;
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.kotla-submit-btn:hover,
+.kotla-whatsapp-submit-btn:hover {
+  transform: translateY(-1px);
+}
+
+.kotla-submit-btn:active,
+.kotla-whatsapp-submit-btn:active {
+  transform: translateY(0);
+}
+
+.kotla-submit-btn span,
+.kotla-whatsapp-submit-btn span {
+  font-size: 16px;
+}
+
+.kotla-submit-btn.buyer {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+
+  box-shadow: 0 7px 18px rgba(37, 99, 235, 0.2);
+}
+
+.kotla-submit-btn.buyer:hover {
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.28);
+}
+
+.kotla-submit-btn.seller {
+  background: linear-gradient(135deg, #15803d, #166534);
+
+  box-shadow: 0 7px 18px rgba(22, 101, 52, 0.18);
+}
+
+.kotla-submit-btn.seller:hover {
+  box-shadow: 0 10px 24px rgba(22, 101, 52, 0.25);
+}
+
+.kotla-whatsapp-submit-btn {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+
+  box-shadow: 0 7px 18px rgba(22, 163, 74, 0.18);
 }
 
 .kotla-whatsapp-submit-btn:hover {
-  background-color: #22bf5b;
+  box-shadow: 0 10px 24px rgba(22, 163, 74, 0.25);
 }
 
-/* --- OTP Screen Specific Styles --- */
-.kotla-otp-info {
-  background: #f8fafc;
-  padding: 14px 16px;
-  border-radius: 10px;
-  margin-bottom: 16px;
-  border: 1px solid #e2e8f0;
-}
-
-.kotla-otp-phone-row {
+.kotla-phone-intro {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  font-size: 13px;
-  color: #334155;
-  margin-bottom: 8px;
+
+  gap: 12px;
+
+  padding: 13px;
+
+  border: 1px solid #dcfce7;
+  border-radius: 11px;
+
+  background: #f0fdf4;
 }
 
-.kotla-change-num-btn {
-  background: none;
-  border: none;
-  color: #2563eb;
-  font-weight: 600;
-  font-size: 12px;
-  cursor: pointer;
-  padding: 0;
-}
-.kotla-change-num-btn:hover {
-  text-decoration: underline;
-}
+.kotla-phone-icon {
+  width: 38px;
+  height: 38px;
 
-.kotla-otp-timer {
-  font-size: 12px;
-  color: #64748b;
-  text-align: right;
-}
+  flex: 0 0 38px;
 
-.kotla-resend-link {
-  background: none;
-  border: none;
-  color: #16a34a;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0;
-  font-size: 12px;
-}
-.kotla-resend-link:hover {
-  text-decoration: underline;
-}
-
-.kotla-otp-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 8px;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #dcfce7;
+
+  color: #15803d;
+
+  font-size: 16px;
 }
 
-.kotla-back-btn {
-  flex: 1;
-  padding: 12px;
-  background-color: #f1f5f9;
-  color: #475569;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s;
-}
-.kotla-back-btn:hover {
-  background-color: #e2e8f0;
+.kotla-phone-intro strong {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #166534;
+
+  font-size: 12px;
 }
 
-.kotla-confirm-btn {
-  flex: 2;
-  padding: 12px;
-  background-color: #16a34a;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s;
-}
-.kotla-confirm-btn:hover {
-  background-color: #15803d;
+.kotla-phone-intro p {
+  margin: 0;
+
+  color: #4d7c5d;
+
+  font-size: 10px;
+  line-height: 1.5;
 }
 
-/* --- Dividers --- */
 .kotla-divider {
   display: flex;
   align-items: center;
-  text-align: center;
-  margin: 20px 0;
+  gap: 10px;
+
+  margin: 24px 0 16px;
 }
 
 .kotla-divider-line {
   flex: 1;
-  border-bottom: 1px solid #e2e8f0;
+
+  height: 1px;
+
+  background: #e8edf3;
 }
 
 .kotla-divider-text {
-  padding: 0 10px;
-  font-size: 11px;
-  color: #94a3b8;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+  color: #a1acba;
+
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+
+  white-space: nowrap;
 }
 
-/* --- Social Buttons --- */
 .kotla-social-container {
   display: flex;
   gap: 10px;
-  margin-bottom: 16px;
 }
 
 .kotla-social-btn {
-  flex: 1;
+  width: 100%;
+  min-height: 42px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s;
-}
+  gap: 9px;
 
-.kotla-social-btn.google {
-  background-color: #ffffff;
+  border: 1px solid #dbe3ec;
+  border-radius: 9px;
+
+  background: #ffffff;
+
   color: #334155;
-  border: 1px solid #cbd5e1;
-}
-.kotla-social-btn.google:hover {
-  background-color: #f8fafc;
-  border-color: #94a3b8;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
-.kotla-social-btn.facebook {
-  background-color: #1877f2;
-  color: white;
-  border: 1px solid #1877f2;
-}
-.kotla-social-btn.facebook:hover {
-  background-color: #166fe5;
+.kotla-social-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+
+  transform: translateY(-1px);
 }
 
-/* --- Footer Switcher --- */
 .kotla-modal-footer {
+  margin-top: 21px;
+
+  color: #94a3b8;
+
   text-align: center;
-  margin-top: 14px;
-  font-size: 13px;
-  color: #64748b;
+
+  font-size: 11px;
 }
 
 .kotla-switch-link {
-  background: none;
-  border: none;
-  color: #2563eb;
-  font-weight: 600;
-  cursor: pointer;
   padding: 0;
-  font-size: 13px;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #2563eb;
+
+  font: inherit;
+  font-weight: 800;
+
+  cursor: pointer;
 }
 
 .kotla-switch-link:hover {
   text-decoration: underline;
 }
 
-/* --- Responsive Media Queries --- */
-@media (max-width: 480px) {
-  .kotla-modal-overlay {
-    padding: 12px;
+.kotla-otp-screen {
+  max-width: 470px;
+  margin: 0 auto;
+
+  padding-top: 24px;
+}
+
+.kotla-otp-hero {
+  text-align: center;
+
+  margin-bottom: 28px;
+}
+
+.kotla-otp-icon {
+  width: 62px;
+  height: 62px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 auto 18px;
+
+  border-radius: 18px;
+
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+
+  color: #2563eb;
+
+  font-size: 25px;
+  font-weight: 800;
+
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.08);
+}
+
+.kotla-otp-hero .kotla-modal-title {
+  font-size: 28px;
+}
+
+.kotla-otp-hero .kotla-modal-subtitle {
+  margin: 0 auto;
+}
+
+.kotla-otp-info {
+  margin-bottom: 20px;
+
+  overflow: hidden;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+
+  background: #f8fafc;
+}
+
+.kotla-otp-phone-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 15px;
+
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.kotla-otp-label {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #94a3b8;
+
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.kotla-otp-phone-row strong {
+  color: #1e293b;
+
+  font-size: 13px;
+}
+
+.kotla-change-num-btn {
+  padding: 7px 10px;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+
+  background: #ffffff;
+
+  color: #475569;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.kotla-change-num-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.kotla-otp-timer {
+  padding: 12px 15px;
+
+  color: #64748b;
+
+  font-size: 10px;
+  text-align: center;
+}
+
+.kotla-otp-timer strong {
+  color: #2563eb;
+}
+
+.kotla-resend-link {
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #2563eb;
+
+  font: inherit;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.kotla-resend-link:hover {
+  text-decoration: underline;
+}
+
+.kotla-otp-input {
+  min-height: 54px;
+
+  text-align: center;
+
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: 0.35em;
+}
+
+.kotla-otp-input::placeholder {
+  letter-spacing: 0.2em;
+  color: #cbd5e1;
+}
+
+.kotla-otp-actions {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+
+  gap: 10px;
+
+  margin-top: 18px;
+}
+
+.kotla-back-btn,
+.kotla-confirm-btn {
+  min-height: 45px;
+
+  border-radius: 9px;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kotla-back-btn {
+  border: 1px solid #dbe3ec;
+
+  background: #ffffff;
+
+  color: #475569;
+}
+
+.kotla-back-btn:hover {
+  background: #f8fafc;
+}
+
+.kotla-confirm-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border: 0;
+
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+
+  color: #ffffff;
+
+  box-shadow: 0 7px 18px rgba(37, 99, 235, 0.2);
+}
+
+.kotla-confirm-btn:hover {
+  transform: translateY(-1px);
+
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.27);
+}
+
+.kotla-confirm-btn span {
+  font-size: 15px;
+}
+
+@keyframes kotlaOverlayIn {
+  from {
+    opacity: 0;
   }
 
-  .kotla-modal-content {
-    padding: 24px 20px;
-    max-height: 95vh;
-    border-radius: 12px;
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes kotlaModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 850px) {
+  .kotla-modal-layout {
+    grid-template-columns: 1fr;
+
+    min-height: auto;
+  }
+
+  .kotla-login-brand {
+    display: none;
+  }
+
+  .kotla-login-content {
+    padding: 42px 42px;
+  }
+
+  .kotla-login-modal {
+    width: min(100%, 570px);
+  }
+}
+
+@media (max-width: 560px) {
+  .kotla-login-overlay {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .kotla-login-modal {
+    width: 100%;
+    height: 100%;
+    max-height: 100vh;
+
+    border: 0;
+    border-radius: 0;
+
+    overflow-y: auto;
+  }
+
+  .kotla-login-content {
+    min-height: 100%;
+    padding: 72px 20px 28px;
+  }
+
+  .kotla-modal-close {
+    top: 17px;
+    right: 17px;
   }
 
   .kotla-modal-title {
-    font-size: 20px;
+    font-size: 25px;
   }
+
+  .kotla-mode-btn {
+    min-height: 58px;
+
+    padding: 9px;
+  }
+
+  .kotla-mode-btn > span {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+  }
+
+  .kotla-tab-btn {
+    font-size: 10px;
+  }
+
+  .kotla-social-btn {
+    font-size: 10px;
+  }
+
+  .kotla-otp-screen {
+    padding-top: 10px;
+  }
+
+  .kotla-otp-hero .kotla-modal-title {
+    font-size: 25px;
+  }
+}
+
+@media (max-width: 380px) {
+  .kotla-login-content {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .kotla-mode-toggle {
+    gap: 6px;
+  }
+
+  .kotla-mode-btn {
+    gap: 7px;
+    padding: 8px;
+  }
+
+  .kotla-mode-btn small {
+    display: none;
+  }
+
+  .kotla-method-tabs {
+    gap: 2px;
+  }
+
+  .kotla-tab-btn {
+    font-size: 9px;
+  }
+
+  .kotla-otp-actions {
+    grid-template-columns: 1fr;
+  }
+}
+/* =========================================================
+   PROFESSIONAL ICON STYLING
+========================================================= */
+
+.kotla-mode-icon {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.04);
+
+  color: currentColor;
+
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.kotla-mode-btn:hover .kotla-mode-icon {
+  transform: translateY(-1px);
+}
+
+/* Buyer active icon */
+.kotla-mode-btn.active-buyer .kotla-mode-icon {
+  background: rgba(37, 99, 235, 0.1);
+}
+
+/* Seller active icon */
+.kotla-mode-btn.active-seller .kotla-mode-icon {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+/* =========================================================
+   BRAND CHECK ICON
+========================================================= */
+
+.kotla-point-icon {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.kotla-point-icon svg {
+  display: block;
+}
+
+/* =========================================================
+   EMAIL TAB ICON
+========================================================= */
+
+.kotla-tab-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  line-height: 0;
+}
+
+.kotla-tab-icon svg {
+  display: block;
+}
+
+/* =========================================================
+   SUBMIT BUTTON ARROW
+========================================================= */
+
+.kotla-submit-btn svg {
+  flex-shrink: 0;
+
+  transition: transform 0.2s ease;
+}
+
+.kotla-submit-btn:hover svg {
+  transform: translateX(3px);
+}
+
+/* =========================================================
+   GOOGLE ICON
+========================================================= */
+
+.kotla-social-btn.google svg {
+  flex-shrink: 0;
+  display: block;
+}
+
+/* =========================================================
+   CLOSE BUTTON
+========================================================= */
+
+.kotla-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kotla-modal-close span {
+  display: block;
+
+  font-size: 27px;
+  line-height: 1;
+  font-weight: 300;
+}
+
+/* =========================================================
+   GENERAL SVG ALIGNMENT
+========================================================= */
+
+.kotla-mode-icon svg,
+.kotla-point-icon svg,
+.kotla-tab-icon svg,
+.kotla-submit-btn svg,
+.kotla-social-btn svg {
+  vertical-align: middle;
+}
+.kotla-label-with-icon {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 7px;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.kotla-label-with-icon svg {
+  display: block;
+  flex-shrink: 0;
+  color: #2563eb; /* Theme blue accent */
 }

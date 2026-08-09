@@ -151,7 +151,39 @@ export default function SellerDashboard({ user, onShowToast }) {
             }`}
             onClick={handleToggleProductView}
           >
-            <span>{activeTab === "add-product" ? "←" : "+"}</span>
+            <span>
+              {activeTab === "add-product" ? (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  width="18"
+                  height="18"
+                  aria-hidden="true"
+                >
+                  <path d="M19 12H5" />
+                  <path d="m12 19-7-7 7-7" />
+                </svg>
+              ) : (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  width="18"
+                  height="18"
+                  aria-hidden="true"
+                >
+                  <path d="M12 5v14" />
+                  <path d="M5 12h14" />
+                </svg>
+              )}
+            </span>
 
             {activeTab === "add-product" ? "View Products" : "Add New Product"}
           </button>
