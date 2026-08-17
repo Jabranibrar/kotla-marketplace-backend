@@ -79,8 +79,12 @@
   justify-content: center;
   border-radius: 12px;
   background: #ffffff;
-  cursor: crosshair;
+  cursor: zoom-in;
   isolation: isolate;
+}
+
+.modal-image-zoom-area.is-zoomed {
+  cursor: zoom-out;
 }
 
 .modal-product-img {
@@ -94,13 +98,15 @@
   user-select: none;
   -webkit-user-drag: none;
   transform: scale(1);
-  transition: transform 0.18s ease-out;
-  will-change: transform;
+  transform-origin: center;
+  transition: transform 0.2s ease-out, transform-origin 0.2s ease-out;
+  will-change: transform, transform-origin;
 }
 
 .modal-image-zoom-area.is-zoomed .modal-product-img {
-  transform: scale(2.35);
-  transition: transform 0.08s linear;
+  transform: scale(2.5);
+  transition: transform 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform-origin 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .modal-zoom-hint {
