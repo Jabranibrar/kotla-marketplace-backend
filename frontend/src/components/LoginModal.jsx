@@ -390,7 +390,7 @@ export default function LoginModal({ isOpen, onClose, onLogin, onShowToast }) {
 
     if (!/^\+92\d{10}$/.test(formattedPhone)) {
       onShowToast(
-        "Please enter a valid Pakistani phone number e.g. 03046133091",
+        "Please enter a valid Pakistani phone number e.g. 0304*******",
         "warning"
       );
       return;
@@ -917,7 +917,7 @@ export default function LoginModal({ isOpen, onClose, onLogin, onShowToast }) {
 
                           <input
                             type="tel"
-                            placeholder="03046133091"
+                            placeholder="0304*******"
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
                             required
@@ -1010,7 +1010,7 @@ export default function LoginModal({ isOpen, onClose, onLogin, onShowToast }) {
 
                         <input
                           type="tel"
-                          placeholder="03046133091"
+                          placeholder="0304*******"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           required
