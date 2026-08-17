@@ -6,43 +6,20 @@ const API = axios.create({
     "https://kotla-marketplace-backend-production.up.railway.app",
 });
 
-// ===============================
-// PRODUCTS
-// ===============================
-
 export const getProducts = () => API.get("/api/products");
-
 export const addProduct = (data) => API.post("/api/products", data);
-
 export const updateProduct = (id, data) => API.put(`/api/products/${id}`, data);
-
-export const deleteProduct = (id) => API.delete(`/api/products/${id}`);
-
+export const deleteProduct = (id, data) =>
+  API.delete(`/api/products/${id}`, { data });
 export const getProductsBySeller = (sellerId) =>
   API.get(`/api/products/seller/${sellerId}`);
-
-// ===============================
-// SELLER
-// ===============================
 
 export const getSellerStats = (sellerId) =>
   API.get(`/api/seller/stats/${sellerId}`);
 
-// ===============================
-// AUTH
-// ===============================
-
 export const registerSeller = (data) => API.post("/api/auth/register", data);
 
-// ===============================
-// ORDERS
-// ===============================
-
 export const createOrder = (data) => API.post("/api/orders", data);
-
-// ===============================
-// ADDRESSES
-// ===============================
 
 export const getAddresses = async (userId) => {
   try {
@@ -63,15 +40,5 @@ export const addAddress = async (data) => {
     throw err;
   }
 };
-
-// ===============================
-// KOTLA AI
-// ===============================
-
-export const askKotlaAI = (message, userId = null) =>
-  API.post("/api/ai/chat", {
-    message,
-    userId,
-  });
 
 export default API;

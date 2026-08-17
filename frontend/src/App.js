@@ -13,7 +13,6 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import LoginModal from "./components/LoginModal";
 import Toast from "./components/Toast";
-import KotlaAI from "./components/KotlaAI";
 
 import Home from "./pages/Home";
 import CheckoutPage from "./pages/CheckoutPage";
@@ -225,8 +224,6 @@ function AppContent() {
       </main>
 
       <Footer />
-
-      <KotlaAI user={user} />
 
       <LoginModal
         isOpen={loginOpen}

@@ -622,7 +622,7 @@ export default function Home({
                         </span>
                       </div>
 
-                      <div className="kotla-list-product-action">
+                      {/* <div className="kotla-list-product-action">
                         <span>View Product</span>
 
                         <svg
@@ -635,7 +635,7 @@ export default function Home({
                           <path d="M5 12h14" />
                           <path d="m13 6 6 6-6 6" />
                         </svg>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 ))}

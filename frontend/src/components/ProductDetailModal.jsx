@@ -247,10 +247,6 @@ export default function ProductDetailModal({
               <span>Hover to zoom</span>
             </div>
           </div>
-
-          <span className="modal-category-badge">
-            {product.category || "General"}
-          </span>
         </div>
 
         <div className="modal-content-box">
